@@ -43,11 +43,11 @@ METHODS:
     updates myXcoordinates a set amount  
     
 - Block:
-  - HEIGHT: int  
-  - WIDTH: int  
-  - myXCoordinate: int  
-  - myYCoordinate: int  
+  -- HEIGHT: int  
+  -- WIDTH: int  
+  -- myXCoordinate: int  
+  -- myYCoordinate: int  
  
-  - blockCollision()  
+  -- blockCollision()  
     returns: none  
     deletes block when collision is detected and calls ballCollision()  
