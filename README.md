@@ -35,10 +35,11 @@ METHODS:
   - MYYCOORDINATES: int
   - myXcoordinates: int
  
-  - keyInput()  
+  + keyInput()  
     returns: none  
-    registers directional inputs and calls move()  
-  - move()  
+    registers directional inputs and calls move()
+    
+  + move()  
     returns: none  
     updates myXcoordinates a set amount  
     
@@ -48,6 +49,6 @@ METHODS:
   - myXCoordinate: int
   - myYCoordinate: int
  
-  - blockCollision()  
+  + blockCollision()  
     returns: none  
     deletes block when collision is detected and calls ballCollision()  
