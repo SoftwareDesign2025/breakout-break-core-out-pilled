@@ -16,18 +16,18 @@ METHODS:
 - Game:  
 
 - Ball:
-  - radius: int
-  - myXCoordinate: int
-  - myYCoordinate: int
-  - myXVelocity: int
-  - myYVelocity: int
+  -- radius: int
+  -- myXCoordinate: int
+  -- myYCoordinate: int
+  -- myXVelocity: int
+  -- myYVelocity: int
  
-  + ballCollision()  
+  ++ ballCollision()  
     returns: none  
     invert velocity according to directionality of surface  
     position ball at edge of colliding object (paddles, walls, blocks)  
 
-  + move()  
+  ++ move()  
     updates position of ball based on velocities  
 
 - Paddle:
