@@ -32,7 +32,7 @@ METHODS:
 
 - Paddle:
   - PADDLEVELOCITY: int
-  - MYYCOORDINATES: int 
+  - MYYCOORDINATES: int
   - myXcoordinates: int
  
   - keyInput()  
@@ -43,10 +43,10 @@ METHODS:
     updates myXcoordinates a set amount  
     
 - Block:
-  - HEIGHT: int  
-  - WIDTH: int  
-  - myXCoordinate: int  
-  - myYCoordinate: int  
+  - HEIGHT: int
+  - WIDTH: int
+  - myXCoordinate: int
+  - myYCoordinate: int
  
   - blockCollision()  
     returns: none  
