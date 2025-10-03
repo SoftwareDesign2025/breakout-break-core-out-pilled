@@ -1,24 +1,24 @@
 # breakout
 
 CLASSES:  
-  main
-  Player
-  Game
-  Ball
-  Paddle
-  Block
+- main
+- Player
+- Game
+- Ball
+- Paddle
+- Block
 
 
 METHODS:  
-main methods:  
-  none(probably), call new game  
+- main methods:  
+  - none(probably), call new game  
 
-Player methods:  
+- Player methods:  
 
-Game methods:  
+- Game methods:  
 
-Ball methods:  
+- Ball methods:  
 
-Paddle methods:  
+- Paddle methods:  
 
-Block methods:  
+- Block methods:  
