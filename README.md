@@ -22,12 +22,12 @@ METHODS:
   - myXVelocity: int
   - myYVelocity: int
  
-  + ballCollision()
+  + ballCollision()  
     returns: none  
     invert velocity according to directionality of surface  
     position ball at edge of colliding object (paddles, walls, blocks)  
 
-  + move()
+  + move()  
     updates position of ball based on velocities  
 
 - Paddle:
@@ -35,10 +35,10 @@ METHODS:
   - MYYCOORDINATES: int 
   - myXcoordinates: int
  
-  - keyInput()
+  - keyInput()  
     returns: none  
     registers directional inputs and calls move()  
-  - move()
+  - move()  
     returns: none  
     updates myXcoordinates a set amount  
     
@@ -48,6 +48,6 @@ METHODS:
   - myXCoordinate: int  
   - myYCoordinate: int  
  
-  - blockCollision()
+  - blockCollision()  
     returns: none  
     deletes block when collision is detected and calls ballCollision()  
