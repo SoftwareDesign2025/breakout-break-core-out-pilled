@@ -20,7 +20,7 @@ METHODS:
   - myXCoordinate: int
   - myYCoordinate: int
   - myXVelocity: int
-  - myYVelocity: int
+  - myYVelocity: int  
  
   + ballCollision()  
     returns: none  
@@ -33,11 +33,11 @@ METHODS:
 - Paddle:
   - PADDLEVELOCITY: int
   - MYYCOORDINATES: int
-  - myXcoordinates: int
+  - myXcoordinates: int  
  
   + keyInput()  
     returns: none  
-    registers directional inputs and calls move()
+    registers directional inputs and calls move()  
     
   + move()  
     returns: none  
