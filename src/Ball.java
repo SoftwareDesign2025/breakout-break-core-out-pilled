@@ -43,19 +43,16 @@ public class Ball {
     // bounce depending on what was hit
     public void bounce(String surface) {
         switch (surface) {
-            case "leftWall":
-            case "rightWall":
+            case "verticalSurface":
             	//invert X velocity
                 myVelocity = new Point2D(-myVelocity.getX(), myVelocity.getY());
                 break;
-            case "topWall":
-            case "paddle":
-            case "brick":
+            case "horizontalSurface":
             	//invert Y velocity
                 myVelocity = new Point2D(myVelocity.getX(), -myVelocity.getY());
                 break;
             case "bottom":
-                stop();
+                stop(); // <- placeholder (use to end game)
                 break;
         }
     }
@@ -65,7 +62,7 @@ public class Ball {
         myVelocity = Point2D.ZERO;
     }
 
-    // reposition the ball (used when resetting)
+    // reposition the ball (used when resetting after death)
     public void reset(double x, double y) {
         myView.setX(x);
         myView.setY(y);
