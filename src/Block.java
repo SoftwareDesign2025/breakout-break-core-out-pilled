@@ -1,26 +1,56 @@
-import java.awt.Rectangle;
+import java.awt.Point;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
+/**
+ * @author Caelan Duncan
+ */
 public class Block {
-	public static final int BLOCK_HEIGHT = 50; //placeholder
-	public static final int BLOCK_WIDTH = 100; //placeholder 
-	public static final int POINT_VALUE = 1; //could be moved to Game class
+	private static final int POINTMULTIPLIER = 10;
 	
-	private Rectangle myBlock;
+	private int myHealth;
+	private int points;
+	
+	private PowerUp myPower;
+	private Rectangle myBlock = new Rectangle();
 	
 	// make a new block at a specific point -> will be called in a loop (with differing coords) in Game class
-	public Block(Image image, int startX, int startY) {
-		myBlock.setSize(BLOCK_WIDTH, BLOCK_HEIGHT);
+	public Block(int health, Point location, int width, int height, PowerUp power) {
+		myBlock.setX(location.getX());
+		myBlock.setY(location.getY());
+		myBlock.setWidth(width);
+		myBlock.setHeight(height);
+		myBlock.setFill(Color.BLUE);
 		
+		myPower = power;
+		myHealth = health;
+		points = myHealth * POINTMULTIPLIER;
 	}
 	
-	// remove block method to be called when collision is detected between ball & block
-	public void removeBlock() {
+	/**
+	 * Reduces health of the block and then breaks it if it's at 0. Only returns non-zero points when breaking.
+	 * 
+	 * @return points given
+	 */
+	public int hit() {
+		myHealth -= 1;
 		
+		if (myHealth == 0) {
+			breakBlock();
+			return points;
+		}
+		
+		return 0;
 	}
 	
-	
-	
+	private void breakBlock() {
+		myPower.drop();
+	}
 }
+
+
+
