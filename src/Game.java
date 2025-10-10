@@ -4,14 +4,15 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.awt.Point;
+import java.io.FileNotFoundException;
 
 /* 
  * set up game with window size, paddle, ball(s)
@@ -28,8 +29,8 @@ public class Game extends Application {
 	public static final String TITLE = "Breakout!";
 	public static final Paint BACKGROUND = Color.BLACK;
 	
-	// agreed upon pixel values for items:
-	final int PADDLE_WIDTH = 60;
+	// agreed upon pixel values for items (for now)
+	final int PADDLE_WIDTH = 92;
 	final int PADDLE_HEIGHT = 12;
 	final int PADDLE_PADDING = 20;
 	final int BALL_SIZE = 20;
@@ -44,6 +45,14 @@ public class Game extends Application {
 	
 	
 	private Scene myScene;
+	private ArrayList<Block> myBlocks;
+	private Paddle paddle;
+	private Ball ball;
+	
+	// launch app
+	public static void main (String[] args) {
+		launch(args);
+	}
 	
 	// initialize game window
 	public void start(Stage stage) {
@@ -64,15 +73,15 @@ public class Game extends Application {
 		Group root = createRootForGame(width, height);
 		Scene scene = new Scene(root, width, height, background);
 		
+		scene.setOnKeyPressed(e -> paddle.move(e.getCode()));		
 		return scene;
 		
 	}
 	
 	private Group createRootForGame(int width, int height) {
-		
 		Group root = new Group();
 		// add blocks to arraylist and root
-		ArrayList<Block> myBlocks = new ArrayList<>();
+		this.myBlocks = new ArrayList<Block>();
 		int blockStepX = BLOCK_X + BLOCK_PADDING;
 		int blockStepY = BLOCK_Y + BLOCK_PADDING;
 		for(int i = 0; i < NUM_BLOCKS_Y; i++) {
@@ -85,16 +94,28 @@ public class Game extends Application {
 			}
 		}
 		// add paddle to root
-		int paddlePosX = (int) (SIZE_X/2  - (0.5 * PADDLE_WIDTH));
+		int paddlePosX = (int) ((SIZE_X/2)  - (0.5 * PADDLE_WIDTH));
 		int paddlePosY = SIZE_Y - (PADDLE_HEIGHT + PADDLE_PADDING);
-		Paddle paddle = new Paddle(paddlePosX, paddlePosY);
+		this.paddle = new Paddle(paddlePosX, paddlePosY);
 		root.getChildren().add(paddle.asNode());
 		// add ball to root (?)
+		int ballPosX = (int) (SIZE_X/2 - (0.5 * BALL_SIZE));
+		int ballPosY = SIZE_Y - (BALL_SIZE + PADDLE_HEIGHT + PADDLE_PADDING);
+		try {
+			this.ball = new Ball(ballPosX, ballPosY);
+			root.getChildren().add(ball.asNode());
+		}
+		catch (FileNotFoundException e) {};
 		
 		return root;
 	}
 			
 	private void step(double elapsedTime) {
-		// 
+		ball.move(elapsedTime);
+		ball.bounce(SIZE_X, SIZE_Y);
+		paddle.move(null);
+		if(ball.asNode().getBoundsInParent().intersects(paddle.asNode().getBoundsInParent())) {
+			ball.hitPaddle();
+		}
 	}
 }
