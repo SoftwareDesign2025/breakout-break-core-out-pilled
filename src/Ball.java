@@ -20,8 +20,8 @@ public class Ball {
     private final Random dice = new Random();
 
     // make a new ball starting at a given position
-    public Ball(Image image, int startX, int startY) {
-        myView = new ImageView(image);
+    public Ball(int startX, int startY) {
+        myView = new ImageView();
         myView.setFitWidth(BALL_SIZE);
         myView.setFitHeight(BALL_SIZE);
         myView.setX(startX);
@@ -66,11 +66,11 @@ public class Ball {
     public void reset(double x, double y) {
         myView.setX(x);
         myView.setY(y);
-        startMoving();
+        launch();
     }
 
     // re-randomize the ball’s movement direction
-    private void startMoving() {
+    private void launch() {
         double angle = Math.toRadians(45 + dice.nextInt(90));
         myVelocity = new Point2D(Math.cos(angle), -Math.sin(angle))
                         .normalize()
