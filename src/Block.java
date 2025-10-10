@@ -20,9 +20,8 @@ public class Block {
 	private PowerUp myPower;
 	private ImageView myView;
 	
-	
-	// make a new block at a specific point -> will be called in a loop (with differing coords) in Game class
 	/**
+	 * Make a new block at a specific point -> will be called in a loop (with differing coords) in Game class
 	 * 
 	 * @param health	amount of health the block should have
 	 * @param location	top left corner of the block
@@ -48,7 +47,11 @@ public class Block {
 		points = myHealth * POINT_MULTIPLIER;
 	}
 	
-	// allows the game to display the block
+	/**
+	 * Allows the game to display the block
+	 * 
+	 * @return view of the block
+	 */
 	public Node asNode() {
 		return myView;
 	}

@@ -7,11 +7,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 /**
+ * On paddle collision with this object, it should call a paddle method to change its size
+ * 
  * @author Caelan Duncan
  */
 public class SizePowerUp extends PowerUp {
 	public static final String POWER_IMAGE = "resources/sizepower.gif";
-	private boolean activated = false;
 
 	public SizePowerUp(Point pos) {
 		super(pos);
@@ -21,16 +22,5 @@ public class SizePowerUp extends PowerUp {
 			myView = new ImageView(img);
 		} 
 		catch (FileNotFoundException e) {}
-		
-		
-		duration = 15;
 	}
-
-	@Override
-	public void activate() {
-		activated = true;
-		
-		
-	}
-
 }
