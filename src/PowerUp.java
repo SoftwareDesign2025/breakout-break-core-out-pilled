@@ -12,6 +12,7 @@ public abstract class PowerUp {
 	
 	protected ImageView myView;
 	protected Point2D myVelocity;
+	protected double duration;
 	
 	public PowerUp(Point pos) {
 		myVelocity = new Point2D(0, 0);
@@ -27,6 +28,10 @@ public abstract class PowerUp {
 	
 	public Node getView() {
 		return myView;
+	}
+	
+	public boolean intersects(ImageView other) {
+		return myView.getBoundsInParent().intersects(other.getBoundsInParent());
 	}
 	
 	public abstract void activate();
