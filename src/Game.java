@@ -1,121 +1,183 @@
-// Initialize game
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Shape;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
 import java.awt.Point;
-import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
-/* 
- * set up game with window size, paddle, ball(s)
- * set up lives (3 chances?)
- * 
- */
 public class Game extends Application {
-	
-	public static final int SIZE_X = 480;
-	public static final int SIZE_Y = 640;
-	public static final int FPS = 60;
-	public static final int MS_DELAY = 1000/FPS;
-	public static final double SEC_DELAY = 1.0/FPS;
-	public static final String TITLE = "Breakout!";
-	public static final Paint BACKGROUND = Color.BLACK;
-	
-	// agreed upon pixel values for items (for now)
-	final int PADDLE_WIDTH = 92;
-	final int PADDLE_HEIGHT = 12;
-	final int PADDLE_PADDING = 20;
-	final int BALL_SIZE = 20;
-	final int SIDE_PADDING = 31;
-	final int BLOCK_X = 40;
-	final int BLOCK_Y = 20;
-	final int BLOCK_PADDING = 2;
-	
-	// game setup parameters:
-	final int NUM_BLOCKS_X = 10;
-	final int NUM_BLOCKS_Y = 5;
-	
-	
-	private Scene myScene;
-	private ArrayList<Block> myBlocks;
-	private Paddle paddle;
-	private Ball ball;
-	
-	// launch app
-	public static void main (String[] args) {
-		launch(args);
-	}
-	
-	// initialize game window
-	public void start(Stage stage) {
-		myScene = setupScene(SIZE_X, SIZE_Y, BACKGROUND);
-		stage.setScene(myScene);
-		stage.setTitle(TITLE);
-		stage.show();
-		
-		KeyFrame frame = new KeyFrame(Duration.millis(MS_DELAY), e -> step(SEC_DELAY));
-		Timeline animation = new Timeline();
-		animation.setCycleCount(Timeline.INDEFINITE);
-		animation.getKeyFrames().add(frame);
-		animation.play();
-		
-	}
-	
-	private Scene setupScene (int width, int height, Paint background) {
-		Group root = createRootForGame(width, height);
-		Scene scene = new Scene(root, width, height, background);
-		
-		scene.setOnKeyPressed(e -> paddle.move(e.getCode()));		
-		return scene;
-		
-	}
-	
-	private Group createRootForGame(int width, int height) {
-		Group root = new Group();
-		// add blocks to arraylist and root
-		this.myBlocks = new ArrayList<Block>();
-		int blockStepX = BLOCK_X + BLOCK_PADDING;
-		int blockStepY = BLOCK_Y + BLOCK_PADDING;
-		for(int i = 0; i < NUM_BLOCKS_Y; i++) {
-			int health = NUM_BLOCKS_Y - i;
-			for(int n = 0; n < NUM_BLOCKS_X; n++) {
-				Point location = new Point(SIDE_PADDING + (blockStepX * n), SIDE_PADDING + (blockStepY * i));
-				Block nextBlock = new Block(health, location, BLOCK_X, BLOCK_Y, null);
-				myBlocks.add(nextBlock);
-				root.getChildren().add(nextBlock.asNode());
-			}
-		}
-		// add paddle to root
-		int paddlePosX = (int) ((SIZE_X/2)  - (0.5 * PADDLE_WIDTH));
-		int paddlePosY = SIZE_Y - (PADDLE_HEIGHT + PADDLE_PADDING);
-		this.paddle = new Paddle(paddlePosX, paddlePosY);
-		root.getChildren().add(paddle.asNode());
-		// add ball to root (?)
-		int ballPosX = (int) (SIZE_X/2 - (0.5 * BALL_SIZE));
-		int ballPosY = SIZE_Y - (BALL_SIZE + PADDLE_HEIGHT + PADDLE_PADDING);
-		try {
-			this.ball = new Ball(ballPosX, ballPosY);
-			root.getChildren().add(ball.asNode());
-		}
-		catch (FileNotFoundException e) {};
-		
-		return root;
-	}
-			
-	private void step(double elapsedTime) {
-		ball.move(elapsedTime);
-		ball.bounce(SIZE_X, SIZE_Y);
-		paddle.move(null);
-		if(ball.asNode().getBoundsInParent().intersects(paddle.asNode().getBoundsInParent())) {
-			ball.hitPaddle();
-		}
-	}
+
+    public static final int SIZE_X = 480;
+    public static final int SIZE_Y = 640;
+    public static final int FPS = 60;
+    public static final int MS_DELAY = 1000 / FPS;
+
+    private ArrayList<Block> myBlocks;
+    private Ball ball;
+    private Paddle paddle;
+    private KeyCode currentKey = null;
+
+    private int lives = 3; // start with 3 lives
+    private Stage gameStage;
+    private Timeline loop;
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        gameStage = new Stage();
+        showStartMenu();
+    }
+
+    // show the initial menu
+    private void showStartMenu() {
+        Group menuRoot = new Group();
+        Scene menuScene = new Scene(menuRoot, SIZE_X, SIZE_Y, Color.BLACK);
+
+        Text title = new Text("BREAKOUT!");
+        title.setFont(new Font(40));
+        title.setFill(Color.WHITE);
+        title.setX(100);
+        title.setY(200);
+
+        Button playButton = new Button("PLAY");
+        playButton.setLayoutX(SIZE_X / 2 - 30);
+        playButton.setLayoutY(300);
+
+        playButton.setOnAction(e -> startGame());
+
+        menuRoot.getChildren().addAll(title, playButton);
+
+        gameStage.setScene(menuScene);
+        gameStage.show();
+    }
+
+    // start the actual game
+    private void startGame() {
+        lives = 3; // reset lives
+
+        Group root = new Group();
+        Scene scene = new Scene(root, SIZE_X, SIZE_Y, Color.BLACK);
+
+        // create paddle
+        paddle = new Paddle(220, 628);
+        root.getChildren().add(paddle.asNode());
+
+        // create ball
+        ball = new Ball(240, 600, 3, -3);
+        root.getChildren().add(ball.getView());
+
+        // create blocks
+        myBlocks = new ArrayList<>();
+        int blockWidth = 40;
+        int blockHeight = 20;
+        int padding = 2;
+        int numBlocksX = 10;
+        int numBlocksY = 5;
+        int startX = 20; // left margin
+        int startY = 30; // top margin
+
+        for (int i = 0; i < numBlocksY; i++) {
+            for (int j = 0; j < numBlocksX; j++) {
+                Point p = new Point(startX + j * (blockWidth + padding), startY + i * (blockHeight + padding));
+                Block b = new Block(numBlocksY - i, p, blockWidth, blockHeight, null);
+                myBlocks.add(b);
+                root.getChildren().add(b.asNode());
+            }
+        }
+
+        // key handling
+        scene.setOnKeyPressed(e -> currentKey = e.getCode());
+        scene.setOnKeyReleased(e -> currentKey = null);
+
+        gameStage.setScene(scene);
+
+        // game loop
+        loop = new Timeline(new KeyFrame(Duration.millis(MS_DELAY), e -> step()));
+        loop.setCycleCount(Timeline.INDEFINITE);
+        loop.play();
+    }
+
+    private void step() {
+        paddle.move(currentKey);
+        ball.move();
+
+        // check bottom of screen
+        if (ball.getView().getY() + 15 >= SIZE_Y) { // ball reached bottom
+            lives--;
+            if (lives <= 0) {
+                gameOver();
+                return;
+            } else {
+                resetBall();
+            }
+        }
+
+        // paddle collision
+        if (paddle.checkCollision(ball)) {
+            paddle.onCollision(ball);
+        }
+
+        // block collisions
+        Iterator<Block> iter = myBlocks.iterator();
+        while (iter.hasNext()) {
+            Block b = iter.next();
+            if (!b.isDestroyed() && b.checkCollision(ball)) {
+                b.onCollision(ball);
+            }
+        }
+
+        // check win condition
+        boolean allDestroyed = myBlocks.stream().allMatch(Block::isDestroyed);
+        if (allDestroyed) {
+            winScreen();
+        }
+    }
+
+    private void resetBall() {
+        ball.getView().setX(240);
+        ball.getView().setY(600);
+        ball.reverseY();
+    }
+
+    private void gameOver() {
+        loop.stop();
+        showEndScreen("GAME OVER");
+    }
+
+    private void winScreen() {
+        loop.stop();
+        showEndScreen("YOU WIN!");
+    }
+
+    private void showEndScreen(String message) {
+        Group root = new Group();
+        Scene scene = new Scene(root, SIZE_X, SIZE_Y, Color.BLACK);
+
+        Text text = new Text(message);
+        text.setFont(new Font(40));
+        text.setFill(Color.WHITE);
+        text.setX(80);
+        text.setY(200);
+
+        Button restartButton = new Button("RESTART");
+        restartButton.setLayoutX(SIZE_X / 2 - 40);
+        restartButton.setLayoutY(300);
+        restartButton.setOnAction(e -> startGame());
+
+        root.getChildren().addAll(text, restartButton);
+        gameStage.setScene(scene);
+    }
 }
