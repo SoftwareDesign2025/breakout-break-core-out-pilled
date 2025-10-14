@@ -4,6 +4,8 @@ import java.util.Random;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 /**
  * Ball for Breakout
@@ -12,16 +14,19 @@ import javafx.scene.image.ImageView;
 public class Ball {
 
 	//place holders until we get a better sense of the scope of everything
-    public static final int BALL_SIZE = 15; 
+    public static final int BALL_SIZE = 20;
+	public static final int BALL_RAD = (int) (0.5 * BALL_SIZE); 
     private static final double BALL_SPEED = 200;
 
-    private final ImageView myView;
+    public static final String BALL_IMAGE = "resources/ball.gif";
+    	private final ImageView myView;
     private Point2D myVelocity;
     private final Random dice = new Random();
 
     // make a new ball starting at a given position
-    public Ball(Image image, int startX, int startY) {
-        myView = new ImageView(image);
+    public Ball(int startX, int startY) throws FileNotFoundException {
+        Image img = new Image(new FileInputStream(BALL_IMAGE));
+        myView = new ImageView(img);
         myView.setFitWidth(BALL_SIZE);
         myView.setFitHeight(BALL_SIZE);
         myView.setX(startX);
@@ -41,22 +46,32 @@ public class Ball {
     }
 
     // bounce depending on what was hit
-    public void bounce(String surface) {
-        switch (surface) {
-            case "verticalSurface":
-            	//invert X velocity
+    public void bounce(int screenWidth, int screenHeight) {
+            // collide all bouncers against the walls
+            if (myView.getX() < 0 || myView.getX() > screenWidth - myView.getBoundsInLocal().getWidth()) {
                 myVelocity = new Point2D(-myVelocity.getX(), myVelocity.getY());
-                break;
-            case "horizontalSurface":
-            	//invert Y velocity
+            }
+            if (myView.getY() < 0 || myView.getY() > screenHeight - myView.getBoundsInLocal().getHeight()) {
                 myVelocity = new Point2D(myVelocity.getX(), -myVelocity.getY());
-                break;
-            case "bottom":
-                stop(); // <- placeholder (use to end game)
-                break;
-        }
+            }
+//        switch (surface) {
+//            case "verticalSurface":
+//            	//invert X velocity
+//                myVelocity = new Point2D(-myVelocity.getX(), myVelocity.getY());
+//                break;
+//            case "horizontalSurface":
+//            	//invert Y velocity
+//                myVelocity = new Point2D(myVelocity.getX(), -myVelocity.getY());
+//                break;
+//            case "bottom":
+//                stop(); // <- placeholder (use to end game)
+//                break;
     }
 
+    public void hitPaddle() {
+      myVelocity = new Point2D(myVelocity.getX(), -myVelocity.getY());
+
+    }
     // stop the ball when it falls off screen
     public void stop() {
         myVelocity = Point2D.ZERO;
@@ -66,11 +81,11 @@ public class Ball {
     public void reset(double x, double y) {
         myView.setX(x);
         myView.setY(y);
-        startMoving();
+        launch();
     }
 
     // re-randomize the ball’s movement direction
-    private void startMoving() {
+    private void launch() {
         double angle = Math.toRadians(45 + dice.nextInt(90));
         myVelocity = new Point2D(Math.cos(angle), -Math.sin(angle))
                         .normalize()

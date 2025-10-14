@@ -4,7 +4,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;;
+import java.io.FileNotFoundException;
 public class Paddle {
 	public static int PADDLE_WIDTH = 92; //placeholder until we run and see how everything fits
 	public static int PADDLE_HEIGHT = 12;
@@ -29,10 +29,9 @@ public class Paddle {
 		 myView = new ImageView(paddleImage);
 		 myView.setX(posX);
 		 myView.setY(posY);
-		 myVelocity = new Point2D(0,0);
 	}
 	
-	 public Node getView () {
+	 public Node asNode() {
 	        return myView;
 	    }
 	
