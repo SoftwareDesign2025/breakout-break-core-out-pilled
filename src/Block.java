@@ -1,78 +1,94 @@
 import java.awt.Point;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 /**
- * @author Caelan Duncan
+ * A block that can be hit by the ball.
+ * Loses health and gives points when broken.
  */
-public class Block {
-	private static final int POINT_MULTIPLIER = 10;
-	private static final String IMAGE_RESOURCES = "resources/brick%s.gif";
-	
-	private int myHealth;
-	private int points;
-	
-	private PowerUp myPower;
-	private ImageView myView;
-	
-	/**
-	 * Make a new block at a specific point -> will be called in a loop (with differing coords) in Game class
-	 * 
-	 * @param health	amount of health the block should have
-	 * @param location	top left corner of the block
-	 * @param width		width of the block
-	 * @param height	height of the block
-	 * @param power		what power, if any the block has
-	 */
-	public Block(int health, Point location, int width, int height, PowerUp power) {
-		try {
-			Image img = new Image(new FileInputStream(String.format(IMAGE_RESOURCES, health)));
-			myView = new ImageView(img);
-		}
-		catch(FileNotFoundException e) {}
-		
-		// defining size and location
-		myView.setFitWidth(width);
-		myView.setFitHeight(height);
-		myView.setX(location.getX());
-		myView.setY(location.getY());
-		
-		myPower = power;
-		myHealth = health;
-		points = myHealth * POINT_MULTIPLIER;
-	}
-	
-	/**
-	 * Allows the game to display the block
-	 * 
-	 * @return view of the block
-	 */
-	public Node asNode() {
-		return myView;
-	}
-	
-	/**
-	 * Reduces health of the block and then breaks it if it's at 0. Only returns non-zero points when breaking.
-	 * When non-zero points are returned, the scene needs to remove the block from the root
-	 * 
-	 * @return points
-	 */
-	public int hit() {
-		myHealth -= 1;
-		
-		if (myHealth == 0) {
-			myPower.drop();
-			return points;
-		}
-				
-		return 0;
-	}
+public class Block implements Collidable {
+
+    private static final int POINT_MULTIPLIER = 10;
+    private static final String IMAGE_RESOURCES = "resources/brick%s.gif";
+
+    private int myHealth;
+    private int myPoints;
+    private boolean destroyed = false;
+
+    private PowerUp myPower; // can be null
+    private ImageView myView;
+
+    public Block(int health, Point location, int width, int height, PowerUp power) {
+        try {
+            Image img = new Image(new FileInputStream(String.format(IMAGE_RESOURCES, health)));
+            myView = new ImageView(img);
+        } catch (FileNotFoundException e) {
+            myView = new ImageView();
+            System.out.println("Block image not found for health: " + health);
+        }
+
+        // set size and position
+        myView.setFitWidth(width);
+        myView.setFitHeight(height);
+        myView.setX(location.x);
+        myView.setY(location.y);
+
+        myHealth = health;
+        myPoints = myHealth * POINT_MULTIPLIER;
+        myPower = power;
+    }
+
+    // show block in scene
+    public Node asNode() {
+        return myView;
+    }
+
+    // called when the ball hits this block
+    public int hit() {
+        if (destroyed) return 0; // already gone
+
+        myHealth -= 1;
+
+        if (myHealth <= 0) {
+            destroyed = true;
+            myView.setVisible(false); // hide block
+
+            if (myPower != null) {
+                myPower.drop(); // drop powerup if it exists
+            }
+
+            return myPoints; // give points only when destroyed
+        }
+
+        return 0;
+    }
+
+    // tells game if block is gone
+    public boolean isDestroyed() {
+        return destroyed;
+    }
+
+    // ----------------------------
+    // Collidable interface methods
+    // ----------------------------
+
+    @Override
+    public boolean checkCollision(Ball ball) {
+        // simple bounds check
+        return !destroyed && myView.getBoundsInParent().intersects(ball.getView().getBoundsInParent());
+    }
+
+    @Override
+    public void onCollision(Ball ball) {
+        hit();         // reduce health / mark destroyed
+        ball.reverseY(); // bounce ball up
+    }
+
+    @Override
+    public Node getView() {
+        return myView;
+    }
 }
-
-
-
