@@ -51,3 +51,17 @@
   + [ ] blockCollision()  
     returns: none  
     deletes block when collision is detected and calls ballCollision()
+
+
+# Breakout Part 2 UML
+
+- [ ] DuplicatePowerUp
+  -Makes a second ball
+
+- [ ] ObstacleObject
+  -myXCoordinates: int
+  -myYCoordinates: int
+
+3 levels ideas:
+  -Blocks w/ 1-2 life on outside, increase life as you go through layers
+  -"Hallway" made of blocks w/ 5 life, hallway breaks then all other blocks are available
