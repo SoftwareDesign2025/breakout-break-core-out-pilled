@@ -1,104 +1,125 @@
-//Ethan Lowe
-
-import java.util.Random;
-import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 /**
- * Ball for Breakout
- * Handles position, movement, and bouncing behavior
+ * Simple Ball class for Breakout.
+ * Moves around, can reverse direction, and implements Collidable so
+ * the game world can treat it like any other collidable object.
+ *
  */
-public class Ball {
+public class Ball implements Collidable {
+    private static final String BALL_IMAGE = "resources/ball.gif";
+    private static final int BALL_SIZE = 15;
 
-	//place holders until we get a better sense of the scope of everything
-    public static final int BALL_SIZE = 20;
-	public static final int BALL_RAD = (int) (0.5 * BALL_SIZE); 
-    private static final double BALL_SPEED = 200;
+    // default screen bounds in case Game doesn't call a bounds-check method
+    // you can override/check with Game calling checkBounds(screenW, screenH)
+    private static final double DEFAULT_SCREEN_WIDTH = 480;
+    private static final double DEFAULT_SCREEN_HEIGHT = 640;
 
-    public static final String BALL_IMAGE = "resources/ball.gif";
-    	private final ImageView myView;
-    private Point2D myVelocity;
-    private final Random dice = new Random();
+    private ImageView myView;
+    private double dx;
+    private double dy;
 
-    // make a new ball starting at a given position
-    public Ball(int startX, int startY) throws FileNotFoundException {
-        Image img = new Image(new FileInputStream(BALL_IMAGE));
-        myView = new ImageView(img);
+    // constructor sets start position and starting velocity
+    public Ball(double startX, double startY, double startDX, double startDY) {
+        try {
+            Image img = new Image(new FileInputStream(BALL_IMAGE));
+            myView = new ImageView(img);
+        } catch (FileNotFoundException e) {
+            System.out.println("Ball image not found! using empty ImageView.");
+            myView = new ImageView();
+        }
+
         myView.setFitWidth(BALL_SIZE);
         myView.setFitHeight(BALL_SIZE);
         myView.setX(startX);
         myView.setY(startY);
 
-        // give the ball a random diagonal direction
-        double angle = Math.toRadians(45 + dice.nextInt(90));
-        myVelocity = new Point2D(Math.cos(angle), -Math.sin(angle))
-                        .normalize()
-                        .multiply(BALL_SPEED);
+        dx = startDX;
+        dy = startDY;
     }
 
-    // move the ball each frame
-    public void move(double elapsedTime) {
-        myView.setX(myView.getX() + myVelocity.getX() * elapsedTime);
-        myView.setY(myView.getY() + myVelocity.getY() * elapsedTime);
-    }
-
-    // bounce depending on what was hit
-    public void bounce(int screenWidth, int screenHeight) {
-            // collide all bouncers against the walls
-            if (myView.getX() < 0 || myView.getX() > screenWidth - myView.getBoundsInLocal().getWidth()) {
-                myVelocity = new Point2D(-myVelocity.getX(), myVelocity.getY());
-            }
-            if (myView.getY() < 0 || myView.getY() > screenHeight - myView.getBoundsInLocal().getHeight()) {
-                myVelocity = new Point2D(myVelocity.getX(), -myVelocity.getY());
-            }
-//        switch (surface) {
-//            case "verticalSurface":
-//            	//invert X velocity
-//                myVelocity = new Point2D(-myVelocity.getX(), myVelocity.getY());
-//                break;
-//            case "horizontalSurface":
-//            	//invert Y velocity
-//                myVelocity = new Point2D(myVelocity.getX(), -myVelocity.getY());
-//                break;
-//            case "bottom":
-//                stop(); // <- placeholder (use to end game)
-//                break;
-    }
-
-    public void hitPaddle() {
-      myVelocity = new Point2D(myVelocity.getX(), -myVelocity.getY());
-
-    }
-    // stop the ball when it falls off screen
-    public void stop() {
-        myVelocity = Point2D.ZERO;
-    }
-
-    // reposition the ball (used when resetting after death)
-    public void reset(double x, double y) {
-        myView.setX(x);
-        myView.setY(y);
-        launch();
-    }
-
-    // re-randomize the ball’s movement direction
-    private void launch() {
-        double angle = Math.toRadians(45 + dice.nextInt(90));
-        myVelocity = new Point2D(Math.cos(angle), -Math.sin(angle))
-                        .normalize()
-                        .multiply(BALL_SPEED);
-    }
-
-    // allows the game to display the ball
-    public ImageView asNode() {
+    // simple getter for the view (used by Game and Collidable checks)
+    @Override
+    public ImageView getView() {
         return myView;
     }
 
-    // helper for detecting overlaps with other objects (paddle, blocks)
-    public boolean intersects(ImageView other) {
-        return myView.getBoundsInParent().intersects(other.getBoundsInParent());
+    // move the ball by its velocity (very simple, no elapsed time)
+    // Game can call this every frame
+    public void move() {
+        myView.setX(myView.getX() + dx);
+        myView.setY(myView.getY() + dy);
+
+        // keep it from leaving the screen using defaults (Game can do nicer checks)
+        checkBounds((int) DEFAULT_SCREEN_WIDTH, (int) DEFAULT_SCREEN_HEIGHT);
     }
+
+    // check and bounce on screen edges (Game can call this with real window size)
+    public void checkBounds(int screenWidth, int screenHeight) {
+        double x = myView.getX();
+        double y = myView.getY();
+
+        // left / right sides
+        if (x <= 0 || x + BALL_SIZE >= screenWidth) {
+            reverseX();
+        }
+
+        // top
+        if (y <= 0) {
+            reverseY();
+        }
+
+        // bottom (fell off) -> for now just reverse Y so it doesn't disappear.
+        // In your Game you might want to treat this as "lose life" instead.
+        if (y + BALL_SIZE >= screenHeight) {
+            reverseY();
+        }
+    }
+
+    // flip horizontal speed
+    public void reverseX() {
+        dx = -dx;
+    }
+
+    // flip vertical speed
+    public void reverseY() {
+        dy = -dy;
+    }
+
+    // allow game or other objects to set velocity directly (e.g., powerups)
+    public void setVelocity(double newDX, double newDY) {
+        dx = newDX;
+        dy = newDY;
+    }
+
+    // expose position-ish methods if needed (keeps them simple)
+    public double getX() { return myView.getX(); }
+    public double getY() { return myView.getY(); }
+
+    // ----------------------
+    // Collidable implementation
+    // ----------------------
+
+    // check intersection with another ball (or any Collidable who uses Ball)
+    @Override
+    public boolean checkCollision(Ball other) {
+        if (other == null || other.getView() == null) return false;
+        return myView.getBoundsInParent().intersects(other.getView().getBoundsInParent());
+    }
+
+    // default reaction when something calls onCollision(thisBall)
+    // Usually Game will call otherObject.onCollision(ball) (not ball.onCollision(other)).
+    // We implement this so Ball itself can be treated as a collidable if needed.
+    @Override
+    public void onCollision(Ball other) {
+        // pretty simple: if another ball/object hits this ball, flip vertical direction
+        // you could add more advanced physics later
+        reverseY();
+    }
+
+
 }
