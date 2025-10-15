@@ -89,6 +89,7 @@ public class Game extends Application {
         int startX = 20; // left margin
         int startY = 30; // top margin
 
+		// generate blocks, add each Block obj to root
         for (int i = 0; i < numBlocksY; i++) {
             for (int j = 0; j < numBlocksX; j++) {
                 Point p = new Point(startX + j * (blockWidth + padding), startY + i * (blockHeight + padding));
