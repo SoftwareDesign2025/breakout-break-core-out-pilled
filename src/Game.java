@@ -11,7 +11,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -80,24 +79,30 @@ public class Game extends Application {
         root.getChildren().add(ball.getView());
 
         // create blocks
-        myBlocks = new ArrayList<>();
-        int blockWidth = 40;
-        int blockHeight = 20;
-        int padding = 2;
-        int numBlocksX = 10;
-        int numBlocksY = 5;
-        int startX = 20; // left margin
-        int startY = 30; // top margin
+        Level defaultLevel = new Level(30, 30, 10, 10, false, false);
+        myBlocks = defaultLevel.getBlocks();
+        for(Block block : myBlocks) {
+          root.getChildren().add(block.asNode());
+
+        }
+        
+//        int blockWidth = 40;
+//        int blockHeight = 20;
+//        int padding = 2;
+//        int numBlocksX = 10;
+//        int numBlocksY = 5;
+//        int startX = 20; // left margin
+//        int startY = 30; // top margin
 
 		// generate blocks, add each Block obj to root
-        for (int i = 0; i < numBlocksY; i++) {
-            for (int j = 0; j < numBlocksX; j++) {
-                Point p = new Point(startX + j * (blockWidth + padding), startY + i * (blockHeight + padding));
-                Block b = new Block(numBlocksY - i, p, blockWidth, blockHeight, null);
-                myBlocks.add(b);
-                root.getChildren().add(b.asNode());
-            }
-        }
+//        for (int i = 0; i < numBlocksY; i++) {
+//            for (int j = 0; j < numBlocksX; j++) {
+//                Point p = new Point(startX + j * (blockWidth + padding), startY + i * (blockHeight + padding));
+//                Block b = new Block(numBlocksY - i, p, blockWidth, blockHeight, null);
+//                myBlocks.add(b);
+//                root.getChildren().add(b.asNode());
+//            }
+//        }
 
         // key handling
         scene.setOnKeyPressed(e -> currentKey = e.getCode());
