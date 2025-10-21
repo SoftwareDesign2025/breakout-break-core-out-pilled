@@ -30,6 +30,9 @@ public class Game extends Application {
     private Stage gameStage;
     private Timeline loop;
 
+    private boolean waitingForRespawn = false; // NEW FLAG
+    private Text livesText; // TEMPORARY TEXT DISPLAY
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -65,7 +68,7 @@ public class Game extends Application {
 
     // start the actual game
     private void startGame() {
-        lives = 3; // reset lives
+        lives = 3;
 
         Group root = new Group();
         Scene scene = new Scene(root, SIZE_X, SIZE_Y, Color.BLACK);
@@ -81,28 +84,16 @@ public class Game extends Application {
         // create blocks
         Level defaultLevel = new Level(30, 30, 10, 10, false, false);
         myBlocks = defaultLevel.getBlocks();
-        for(Block block : myBlocks) {
-          root.getChildren().add(block.asNode());
-
+        for (Block block : myBlocks) {
+            root.getChildren().add(block.asNode());
         }
-        
-//        int blockWidth = 40;
-//        int blockHeight = 20;
-//        int padding = 2;
-//        int numBlocksX = 10;
-//        int numBlocksY = 5;
-//        int startX = 20; // left margin
-//        int startY = 30; // top margin
 
-		// generate blocks, add each Block obj to root
-//        for (int i = 0; i < numBlocksY; i++) {
-//            for (int j = 0; j < numBlocksX; j++) {
-//                Point p = new Point(startX + j * (blockWidth + padding), startY + i * (blockHeight + padding));
-//                Block b = new Block(numBlocksY - i, p, blockWidth, blockHeight, null);
-//                myBlocks.add(b);
-//                root.getChildren().add(b.asNode());
-//            }
-//        }
+        // LIVES TEXT (hidden by default)
+        livesText = new Text();
+        livesText.setFont(new Font(24));
+        livesText.setFill(Color.WHITE);
+        livesText.setVisible(false);
+        root.getChildren().add(livesText);
 
         // key handling
         scene.setOnKeyPressed(e -> currentKey = e.getCode());
@@ -118,16 +109,23 @@ public class Game extends Application {
 
     private void step() {
         paddle.move(currentKey);
+
+        // while paused after losing a life, freeze ball movement but keep paddle responsive
+        if (waitingForRespawn) {
+            return;
+        }
+
         ball.move();
 
         // check bottom of screen
-        if (ball.getView().getY() + 15 >= SIZE_Y) { // ball reached bottom
+        if (ball.getView().getY() + 15 >= SIZE_Y) {
             lives--;
             if (lives <= 0) {
                 gameOver();
                 return;
             } else {
-                resetBall();
+                resetBallWithDelay();
+                return;
             }
         }
 
@@ -152,10 +150,34 @@ public class Game extends Application {
         }
     }
 
-    private void resetBall() {
-        ball.getView().setX(240);
-        ball.getView().setY(600);
-        ball.reverseY();
+    // MODIFIED RESET: adds 3-sec delay & lives text display
+    private void resetBallWithDelay() {
+        waitingForRespawn = true;
+
+        // set ball position ~240 px from center bottom
+        ball.getView().setX(SIZE_X / 2.0 - 7.5);
+        ball.getView().setY(SIZE_Y - 240);
+
+        // freeze ball
+        ball.setVelocity(0, 0);
+
+        // display lives text
+        livesText.setText("LIVES: " + lives);
+        livesText.setX(SIZE_X / 2.0 - 50);
+        livesText.setY(ball.getView().getY() - 120);
+        livesText.setVisible(true);
+
+        // wait 3 seconds before resuming
+        Timeline delay = new Timeline(new KeyFrame(Duration.seconds(3), e -> {
+            livesText.setVisible(false);
+            waitingForRespawn = false;
+
+            // random downward angle
+            double randomDX = (Math.random() * 2 - 1) * 3; // -3 to +3
+            double randomDY = Math.abs(Math.random() * 2 + 2); // downward
+            ball.setVelocity(randomDX, randomDY);
+        }));
+        delay.play();
     }
 
     private void gameOver() {
