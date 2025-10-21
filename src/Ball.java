@@ -4,10 +4,19 @@ import java.io.FileNotFoundException;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+
+/**
+ * Simple Ball class for Breakout.
+ * Moves around, can reverse direction, and implements Collidable so
+ * the game world can treat it like any other collidable object.
+ *
+ */
 public class Ball implements Collidable {
     private static final String BALL_IMAGE = "resources/ball.gif";
     private static final int BALL_SIZE = 15;
 
+    
+    // default screen bounds in case Game doesn't call a bounds-check method
     private static final double DEFAULT_SCREEN_WIDTH = 480;
     private static final double DEFAULT_SCREEN_HEIGHT = 640;
 
@@ -18,6 +27,7 @@ public class Ball implements Collidable {
     // store initial speed magnitude for consistent respawns
     private double speedMagnitude;
 
+    // constructor sets start position and starting velocity
     public Ball(double startX, double startY, double startDX, double startDY) {
         try {
             Image img = new Image(new FileInputStream(BALL_IMAGE));
@@ -38,11 +48,14 @@ public class Ball implements Collidable {
         speedMagnitude = Math.sqrt(dx*dx + dy*dy); // store initial speed
     }
 
+    // getter for the view (used by Game and Collidable)
     @Override
     public ImageView getView() {
         return myView;
     }
 
+    // move the ball by its velocity (very simple, no elapsed time)
+    // Game can call this every frame
     // updated move so it moves in smaller chunks to avoid skipping collisions
     public void move() {
         int steps = (int) Math.ceil(Math.max(Math.abs(dx), Math.abs(dy))); 
@@ -53,20 +66,24 @@ public class Ball implements Collidable {
             myView.setX(myView.getX() + stepX);
             myView.setY(myView.getY() + stepY);
         }
-
+        // keep it from leaving the screen using defaults (Game can do nicer checks)
         checkBounds((int) DEFAULT_SCREEN_WIDTH, (int) DEFAULT_SCREEN_HEIGHT);
     }
-
+    
+    // check and bounce on screen edges (Game can call this with real window size)
     public void checkBounds(int screenWidth, int screenHeight) {
         double x = myView.getX();
         double y = myView.getY();
 
+        // left / right sides
         if (x <= 0 || x + BALL_SIZE >= screenWidth) {
             reverseX();
         }
+        // top
         if (y <= 0) {
             reverseY();
         }
+        // bottom (fell off)
         if (y + BALL_SIZE >= screenHeight) {
             reverseY();
         }
@@ -75,6 +92,7 @@ public class Ball implements Collidable {
     public void reverseX() { dx = -dx; }
     public void reverseY() { dy = -dy; }
 
+    // allow game or other objects to set velocity directly (e.g., powerups)
     public void setVelocity(double newDX, double newDY) {
         // maintain speed magnitude for consistent gameplay
         double angle = Math.atan2(newDY, newDX);
@@ -85,6 +103,10 @@ public class Ball implements Collidable {
     public double getX() { return myView.getX(); }
     public double getY() { return myView.getY(); }
 
+    
+
+    // Collidable implementation
+    // check intersection with another ball (or any Collidable who uses Ball)
     @Override
     public boolean checkCollision(Ball other) {
         if (other == null || other.getView() == null) return false;

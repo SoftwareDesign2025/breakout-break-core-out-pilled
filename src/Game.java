@@ -68,7 +68,7 @@ public class Game extends Application {
 
     // start the actual game
     private void startGame() {
-        lives = 3;
+        lives = 3; // reset lives
 
         Group root = new Group();
         Scene scene = new Scene(root, SIZE_X, SIZE_Y, Color.BLACK);
@@ -87,6 +87,24 @@ public class Game extends Application {
         for (Block block : myBlocks) {
             root.getChildren().add(block.asNode());
         }
+        
+//      int blockWidth = 40;
+//      int blockHeight = 20;
+//      int padding = 2;
+//      int numBlocksX = 10;
+//      int numBlocksY = 5;
+//      int startX = 20; // left margin
+//      int startY = 30; // top margin
+
+		// generate blocks, add each Block obj to root
+//      for (int i = 0; i < numBlocksY; i++) {
+//          for (int j = 0; j < numBlocksX; j++) {
+//              Point p = new Point(startX + j * (blockWidth + padding), startY + i * (blockHeight + padding));
+//              Block b = new Block(numBlocksY - i, p, blockWidth, blockHeight, null);
+//              myBlocks.add(b);
+//              root.getChildren().add(b.asNode());
+//          }
+//      }
 
         // LIVES TEXT (hidden by default)
         livesText = new Text();
