@@ -1,9 +1,12 @@
-import java.awt.Point;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.shape.Rectangle;
 
 /**
  * A block that can be hit by the ball.
@@ -33,6 +36,9 @@ public class Block implements Collidable {
 
     private PowerUp myPower; // can be null
     private ImageView myView;
+    
+    private ArrayList<Rectangle> horizontalBounds = new ArrayList<>();
+    private ArrayList<Rectangle> verticalBounds = new ArrayList<>();
 
     public Block(int xCoord, int yCoord, int health, PowerUp power) {
         try {
@@ -60,7 +66,7 @@ public class Block implements Collidable {
     }
 
     // called when the ball hits this block
-    public int hit() {
+    private int hit() {
         if (destroyed) return 0; // already gone
 
         myHealth -= 1;
@@ -97,7 +103,18 @@ public class Block implements Collidable {
     @Override
     public void onCollision(Ball ball) {
         hit();         // reduce health / mark destroyed
-        ball.reverseY(); // bounce ball up
+        
+        Bounds bounds1 = myView.getBoundsInParent();
+        Bounds bounds2 = ball.getView().getBoundsInParent();
+        
+        // calculating size of collision box
+        double intersectX = Math.max(bounds1.getMinX(), bounds2.getMinX());
+        double intersectY = Math.max(bounds1.getMinY(), bounds2.getMinY());
+        double intersectWidth = Math.min(bounds1.getMaxX(), bounds2.getMaxX()) - intersectX;
+        double intersectHeight = Math.min(bounds1.getMaxY(), bounds2.getMaxY()) - intersectY;
+        
+        if (intersectHeight >= intersectWidth) ball.reverseX();
+        else ball.reverseY();
     }
 
     @Override
