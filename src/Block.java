@@ -10,7 +10,20 @@ import javafx.scene.image.ImageView;
  * Loses health and gives points when broken.
  */
 public class Block implements Collidable {
+	
+	// constants/getters for general block properties:
+	public static final int SIZE_X = 40;
+	public static final int SIZE_Y = 12;
+	
+	public static int getX() {
+		return SIZE_X;
+	}
+	
+	public static int getY() {
+		return SIZE_Y;
+	}
 
+	// local constants
     private static final int POINT_MULTIPLIER = 10;
     private static final String IMAGE_RESOURCES = "resources/brick%s.gif";
 
@@ -21,7 +34,7 @@ public class Block implements Collidable {
     private PowerUp myPower; // can be null
     private ImageView myView;
 
-    public Block(int health, Point location, int width, int height, PowerUp power) {
+    public Block(int xCoord, int yCoord, int health, PowerUp power) {
         try {
             Image img = new Image(new FileInputStream(String.format(IMAGE_RESOURCES, health)));
             myView = new ImageView(img);
@@ -31,10 +44,10 @@ public class Block implements Collidable {
         }
 
         // set size and position
-        myView.setFitWidth(width);
-        myView.setFitHeight(height);
-        myView.setX(location.x);
-        myView.setY(location.y);
+        myView.setFitWidth(SIZE_X);
+        myView.setFitHeight(SIZE_Y);
+        myView.setX(xCoord);
+        myView.setY(yCoord);
 
         myHealth = health;
         myPoints = myHealth * POINT_MULTIPLIER;
