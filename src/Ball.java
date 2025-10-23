@@ -102,8 +102,12 @@ public class Ball implements Collidable {
 
     public double getX() { return myView.getX(); }
     public double getY() { return myView.getY(); }
-
     
+    public void setX(double x) { myView.setX(x); }
+    public void setY(double y) { myView.setY(y); }
+    
+    public double getDx() { return dx; }
+    public double getDy() { return dy; }
 
     // Collidable implementation
     // check intersection with another ball (or any Collidable who uses Ball)
