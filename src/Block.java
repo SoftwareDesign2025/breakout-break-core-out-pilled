@@ -1,5 +1,7 @@
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -59,7 +61,7 @@ public class Block implements Collidable {
     }
 
     // called when the ball hits this block
-    public int hit() {
+    private int hit() {
         if (destroyed) return 0; // already gone
 
         myHealth -= 1;
@@ -96,7 +98,38 @@ public class Block implements Collidable {
     @Override
     public void onCollision(Ball ball) {
         hit();         // reduce health / mark destroyed
-        ball.reverseY(); // bounce ball up
+        
+        Bounds bounds1 = myView.getBoundsInParent();
+        Bounds bounds2 = ball.getView().getBoundsInParent();
+        
+        double intersectX = Math.max(bounds1.getMinX(), bounds2.getMinX());
+        double intersectY = Math.max(bounds1.getMinY(), bounds2.getMinY());
+        double intersectWidth = Math.min(bounds1.getMaxX(), bounds2.getMaxX()) - intersectX;
+        double intersectHeight = Math.min(bounds1.getMaxY(), bounds2.getMaxY()) - intersectY;
+        
+        if (intersectHeight >= intersectWidth) {
+        	ball.reverseX();
+
+        	double moveAmount = determineMoveDirection(intersectWidth, ball.getDx());
+        	
+        	ball.setX(ball.getX() + moveAmount);
+        }
+        else {
+        	ball.reverseY();
+        	
+        	double moveAmount = determineMoveDirection(intersectHeight, ball.getDy());
+        	
+        	ball.setY(ball.getY() + moveAmount);
+        }
+        
+    }
+    
+    private double determineMoveDirection(double moveAmount, double velocity) {
+    	if (velocity < 0) {
+    		return -moveAmount;
+    	}
+    	
+    	return moveAmount;
     }
 
     @Override

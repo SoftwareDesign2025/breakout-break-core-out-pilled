@@ -13,8 +13,10 @@ import javafx.scene.image.ImageView;
  */
 public class SizePowerUp extends PowerUp {
 	public static final String POWER_IMAGE = "resources/sizepower.gif";
+	
+	private Paddle paddle;
 
-	public SizePowerUp(Point pos) {
+	public SizePowerUp(Point pos, Paddle paddle) {
 		super(pos);
 		
 		try {
@@ -22,5 +24,22 @@ public class SizePowerUp extends PowerUp {
 			myView = new ImageView(img);
 		} 
 		catch (FileNotFoundException e) {}
+		
+		this.paddle = paddle;
+	}
+	
+	@Override
+	public void activatePower() {
+		paddle.getView().setScaleX(paddle.getView().getScaleX() * 2);
+		
+		try {
+			Thread.sleep(DURATION);
+		} catch (InterruptedException e) {}
+		
+		deactivatePower();
+	}
+	
+	private void deactivatePower() {
+		paddle.getView().setScaleX(paddle.getView().getScaleX() / 2);
 	}
 }

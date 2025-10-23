@@ -10,7 +10,7 @@ import javafx.scene.image.ImageView;
  * 
  * @author Caelan Duncan
  */
-public class PowerUp {
+public abstract class PowerUp {
 	public static final int MOVING_VELOCITY = 80;
 	public static final long DURATION = 15000;
 	
@@ -37,16 +37,5 @@ public class PowerUp {
 		return myView.getBoundsInParent().intersects(other.getBoundsInParent());
 	}
 	
-	/**
-	 * When this returns, the effect that was originally put in place should be reverted.
-	 * 
-	 * @return	true when the duration has passed
-	 */
-	public boolean powerUpTimer() {
-		try {
-			Thread.sleep(DURATION);
-		} catch (InterruptedException e) {}
-		
-		return true;
-	}
+	public abstract void activatePower();
 }
