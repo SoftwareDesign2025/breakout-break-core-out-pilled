@@ -1,6 +1,5 @@
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.math.*;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -15,7 +14,8 @@ import javafx.scene.image.ImageView;
 public class Ball implements Collidable {
     private static final String BALL_IMAGE = "resources/ball.gif";
     private static final int BALL_SIZE = 15;
-
+    private static final int ANGLE_RANGE = 60;
+    private static final int BALL_LAUNCH_SPEED = 4;
     
     // default screen bounds in case Game doesn't call a bounds-check method
     private static final double DEFAULT_SCREEN_WIDTH = 480;
@@ -59,12 +59,13 @@ public class Ball implements Collidable {
     
     // constructor override for default (centered) position, 0 velocity
     public Ball() {
-    		this(DEFAULT_POS_X, DEFAULT_POS_Y, 0, 0);
+    	this(DEFAULT_POS_X, DEFAULT_POS_Y, 0, 0);
     }
     
-//    public launch() {
-//    	
-//    }
+    public void launch() {
+    	double angle = Math.toRadians((Math.random() * ANGLE_RANGE) + ANGLE_RANGE);
+    	setVelocity(angle);
+    }
 
     // getter for the view (used by Game and Collidable)
     @Override
@@ -111,11 +112,16 @@ public class Ball implements Collidable {
     public void reverseY() { dy = -dy; }
 
     // allow game or other objects to set velocity directly (e.g., powerups)
-    public void setVelocity(double newDX, double newDY) {
+    public void setVelocity(double angle) {
         // maintain speed magnitude for consistent gameplay
-        double angle = Math.atan2(newDY, newDX);
+    	if(speedMagnitude > 0) {
         dx = speedMagnitude * Math.cos(angle);
-        dy = speedMagnitude * Math.sin(angle);
+        dy = -1 * speedMagnitude * Math.sin(angle);
+    	}
+    	else {
+    		dx = BALL_LAUNCH_SPEED * Math.cos(angle);
+            dy = -1 * BALL_LAUNCH_SPEED * Math.sin(angle); 
+    	}
     }
 
     public double getX() { return myView.getX(); }

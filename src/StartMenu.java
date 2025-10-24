@@ -8,37 +8,32 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-public class StartMenu extends Game {
+public class StartMenu extends Game{
 	
 	private Scene startMenuScene;
 	private boolean startGame;
 
-	public StartMenu(int size_x, int size_y) {
+	public StartMenu(int size_x, int size_y, Game game) {
 		
-		synchronized(this) {
 			GridPane startMenuGridPane = new GridPane();
 			startGame = false;
 			
 		    Text title = new Text("BREAKOUT!");
 		    title.setFont(new Font(40));
-		    title.setFill(Color.WHITE);
+		    title.setFill(Color.BLACK);
 		    startMenuGridPane.add(title, 0, 0);
 		    
 		    Button playButton = new Button("New Game");
+		    playButton.setOnAction(e -> {game.runGame();});
 		    startMenuGridPane.add(playButton, 0, 1);
 		    startMenuGridPane.setConstraints(playButton, 0, 1, 1, 1, HPos.CENTER, VPos.CENTER);
 		    
-		    // @TODO: change event handling to avoid inheritance
-		    playButton.setOnAction(e -> runGame());
-		    
 		    startMenuGridPane.setAlignment(Pos.TOP_CENTER);
 		    startMenuScene = new Scene(startMenuGridPane, size_x, size_y, Color.BLUE);
-		}
 
 	}
 	
 	public Scene getScene() {
 		return startMenuScene;
-	}
-    
+	} 
 }
