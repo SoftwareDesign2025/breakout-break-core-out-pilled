@@ -22,6 +22,7 @@ public class Game extends Application {
     public static final int MS_DELAY = 1000 / FPS;
 
     private ArrayList<Block> myBlocks;
+    private ArrayList<PowerUp> myPowerups;
     private Ball ball;
     private Paddle paddle;
     private KeyCode currentKey = null;
@@ -78,7 +79,7 @@ public class Game extends Application {
         root.getChildren().add(paddle.asNode());
 
         // create ball
-        ball = new Ball(240, 600, 3, -3);
+        ball = new Ball(240, 600, 4, -4);
         root.getChildren().add(ball.getView());
 
         // create blocks
@@ -153,12 +154,24 @@ public class Game extends Application {
         }
 
         // block collisions
-        Iterator<Block> iter = myBlocks.iterator();
-        while (iter.hasNext()) {
-            Block b = iter.next();
+        Iterator<Block> blockIterator = myBlocks.iterator();
+        while (blockIterator.hasNext()) {
+            Block b = blockIterator.next();
             if (!b.isDestroyed() && b.checkCollision(ball)) {
                 b.onCollision(ball);
             }
+        }
+        
+        // powerup movement and collisions
+        Iterator<PowerUp> powerupIterator = myPowerups.iterator();
+        while (powerupIterator.hasNext()) {
+        	PowerUp p = powerupIterator.next();
+        	
+        	p.move();
+        	
+        	if (p.intersects(paddle.getView())) {
+				p.activatePower();
+			}
         }
 
         // check win condition
