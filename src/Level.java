@@ -9,7 +9,7 @@ public abstract class Level {
 	
 	// Object lists for all levels:
 	protected ArrayList<Block> blocks = new ArrayList<Block>();
-	protected ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
+	protected ArrayList<Block> obstacles = new ArrayList<Block>();
 	protected ArrayList<PowerUp> powerUps = new ArrayList<PowerUp>();
 	protected ArrayList<Ball> balls = new ArrayList<Ball>();
 	protected ArrayList<Paddle> paddles = new ArrayList<Paddle>();
@@ -126,6 +126,8 @@ public abstract class Level {
             		}
         		}
         	}
+        
+        // obstacle collision
 	
         // powerup movement and collisions
         Iterator<PowerUp> powerupIterator = powerUps.iterator();

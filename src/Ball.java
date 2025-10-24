@@ -15,7 +15,7 @@ public class Ball implements Collidable {
     private static final String BALL_IMAGE = "resources/ball.gif";
     private static final int BALL_SIZE = 15;
     private static final int ANGLE_RANGE = 60;
-    private static final int BALL_LAUNCH_SPEED = 4;
+    private static final int BALL_LAUNCH_SPEED = 6;
     
     // default screen bounds in case Game doesn't call a bounds-check method
     private static final double DEFAULT_SCREEN_WIDTH = 480;
@@ -26,7 +26,7 @@ public class Ball implements Collidable {
     private static final double PADDLE_WIDTH = 92;
     private static final double PADDLE_PADDING = 30;
     private static final double DEFAULT_POS_X = (DEFAULT_SCREEN_WIDTH / 2) - (BALL_SIZE / 2);
-	private static final double DEFAULT_POS_Y = (DEFAULT_SCREEN_HEIGHT - (PADDLE_HEIGHT + PADDLE_PADDING + BALL_SIZE));
+	private static final double DEFAULT_POS_Y = (DEFAULT_SCREEN_HEIGHT - (PADDLE_HEIGHT + PADDLE_PADDING + BALL_SIZE + 2));
 	
 
     private ImageView myView;
@@ -112,15 +112,15 @@ public class Ball implements Collidable {
     public void reverseY() { dy = -dy; }
 
     // allow game or other objects to set velocity directly (e.g., powerups)
-    public void setVelocity(double angle) {
+    public void setVelocity(double angleRad) {
         // maintain speed magnitude for consistent gameplay
     		if(speedMagnitude > 0) {
-    			dx = speedMagnitude * Math.cos(angle);
-        		dy = -1 * speedMagnitude * Math.sin(angle);
+    			dx = speedMagnitude * Math.cos(angleRad);
+        		dy = -1 * speedMagnitude * Math.sin(angleRad);
     		}
     		else {
-    			dx = BALL_LAUNCH_SPEED * Math.cos(angle);
-    			dy = -1 * BALL_LAUNCH_SPEED * Math.sin(angle); 
+    			dx = BALL_LAUNCH_SPEED * Math.cos(angleRad);
+    			dy = -1 * BALL_LAUNCH_SPEED * Math.sin(angleRad); 
     		}
     }
 

@@ -13,7 +13,7 @@ import java.util.Random;
 public class Paddle implements Collidable {
     public static int PADDLE_WIDTH = 92;
     public static int PADDLE_HEIGHT = 12;
-    public static final int PADDLE_VELOCITY = 5;
+    public static final int PADDLE_VELOCITY = 7;
     public static final String PADDLE_IMAGE = "resources/Paddle.png";
     public static final int MIN_RANDOMIZING = -5;
     public static final int MAX_RANDOMIZING = 5;
@@ -90,11 +90,11 @@ public class Paddle implements Collidable {
     public void onCollision(Ball ball) {
         // just make ball bounce up and have a 50/50 chance of changing direction
         ball.reverseY();
-        Random random = new Random();
-    	  int reverseX = random.nextInt(0, 2);
-    	  if(reverseX > 0) {
-    		  ball.reverseX();
-    	  }
+        
+        double angle = Math.atan(ball.getDy() / ball.getDx());
+        double angleModifier = (Math.random() * .087) - .04;
+        
+        ball.setVelocity(angle + angleModifier);
     }
 
     @Override
