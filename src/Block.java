@@ -27,7 +27,7 @@ public class Block implements Collidable {
     private PowerUp myPower; // can be null
     private ImageView myView;
 
-    public Block(int xCoord, int yCoord, int health, PowerUp power) {
+    public Block(int xCoord, int yCoord, int health) {
         try {
             Image img = new Image(new FileInputStream(String.format(IMAGE_RESOURCES, health)));
             myView = new ImageView(img);
@@ -44,7 +44,10 @@ public class Block implements Collidable {
 
         myHealth = health;
         myPoints = myHealth * POINT_MULTIPLIER;
-        myPower = power;
+    }
+    
+    public void setPowerup(PowerUp powerup) {
+    	myPower = powerup;
     }
 
     // show block in scene
