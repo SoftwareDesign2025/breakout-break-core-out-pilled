@@ -1,9 +1,25 @@
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class Obstacle extends Block {
-	private final static String IMAGE_RESOURCES = "resources/obstacle.gif";
+	private static final String IMAGE_RESOURCES = "resources/obstacle.gif";
 
-	public Obstacle(int xCoord, int yCoord, int health) {
-		super(xCoord, yCoord, health);
+	public Obstacle(int xCoord, int yCoord) {
+		super(xCoord, yCoord, 0);
+	}
+	
+	@Override
+	protected void setImage(int health) {
+		try {
+            Image img = new Image(new FileInputStream(IMAGE_RESOURCES));
+            myView = new ImageView(img);
+        } catch (FileNotFoundException e) {
+            myView = new ImageView();
+            System.out.println("Block image not found for health: " + health);
+        }
 	}
 	
 	@Override

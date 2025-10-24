@@ -25,16 +25,10 @@ public class Block implements Collidable {
     private boolean destroyed = false;
 
     private PowerUp myPower; // can be null
-    private ImageView myView;
+    protected ImageView myView;
 
     public Block(int xCoord, int yCoord, int health) {
-        try {
-            Image img = new Image(new FileInputStream(String.format(IMAGE_RESOURCES, health)));
-            myView = new ImageView(img);
-        } catch (FileNotFoundException e) {
-            myView = new ImageView();
-            System.out.println("Block image not found for health: " + health);
-        }
+        setImage(health);
 
         // set size and position
         myView.setFitWidth(SIZE_X);
@@ -44,6 +38,16 @@ public class Block implements Collidable {
 
         myHealth = health;
         myPoints = myHealth * POINT_MULTIPLIER;
+    }
+    
+    protected void setImage(int health) {
+    	try {
+            Image img = new Image(new FileInputStream(String.format(IMAGE_RESOURCES, health)));
+            myView = new ImageView(img);
+        } catch (FileNotFoundException e) {
+            myView = new ImageView();
+            System.out.println("Block image not found for health: " + health);
+        }
     }
     
     public void setPowerup(PowerUp powerup) {
