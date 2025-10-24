@@ -92,7 +92,7 @@ public class Paddle implements Collidable {
         ball.reverseY();
         
         double angle = Math.atan(ball.getDy() / ball.getDx());
-        double angleModifier = (Math.random() / 2) - .5;
+        double angleModifier = (Math.random() * .087) - .04;
         
         ball.setVelocity(angle + angleModifier);
     }

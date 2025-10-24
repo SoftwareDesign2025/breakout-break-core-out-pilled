@@ -44,7 +44,7 @@ public class Game extends Application {
     private ArrayList<Level> getLevels() {
     		ArrayList<Level> levels = new ArrayList<Level>();
     		levels.add(new Level_1());
-//    		levels.add(new Level_2());
+    		levels.add(new Level_2());
     		
     		return levels;
     }
