@@ -15,14 +15,6 @@ public class Block implements Collidable {
 	// constants/getters for general block properties:
 	public static final int SIZE_X = 40;
 	public static final int SIZE_Y = 12;
-	
-	public static int getX() {
-		return SIZE_X;
-	}
-	
-	public static int getY() {
-		return SIZE_Y;
-	}
 
 	// local constants
     private static final int POINT_MULTIPLIER = 10;

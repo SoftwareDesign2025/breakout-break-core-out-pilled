@@ -1,5 +1,6 @@
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.math.*;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -19,6 +20,14 @@ public class Ball implements Collidable {
     // default screen bounds in case Game doesn't call a bounds-check method
     private static final double DEFAULT_SCREEN_WIDTH = 480;
     private static final double DEFAULT_SCREEN_HEIGHT = 640;
+    
+    // default paddle dimensions for default ball position
+    private static final double PADDLE_HEIGHT = 12;
+    private static final double PADDLE_WIDTH = 92;
+    private static final double PADDLE_PADDING = 30;
+    private static final double DEFAULT_POS_X = (DEFAULT_SCREEN_WIDTH / 2) - (BALL_SIZE / 2);
+	private static final double DEFAULT_POS_Y = (DEFAULT_SCREEN_HEIGHT - (PADDLE_HEIGHT + PADDLE_PADDING + BALL_SIZE));
+	
 
     private ImageView myView;
     private double dx;
@@ -47,6 +56,15 @@ public class Ball implements Collidable {
 
         speedMagnitude = Math.sqrt(dx*dx + dy*dy); // store initial speed
     }
+    
+    // constructor override for default (centered) position, 0 velocity
+    public Ball() {
+    		this(DEFAULT_POS_X, DEFAULT_POS_Y, 0, 0);
+    }
+    
+//    public launch() {
+//    	
+//    }
 
     // getter for the view (used by Game and Collidable)
     @Override

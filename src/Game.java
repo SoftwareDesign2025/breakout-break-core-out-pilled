@@ -20,42 +20,59 @@ public class Game extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
-    // publicly available game properties
-    private static final int SIZE_X = 480;
-    private static final int SIZE_Y = 640;
+    
+    // public fields for default position constructors
+    public static final int SIZE_X = 480;
+    public static final int SIZE_Y = 640;
     private static final int FPS = 60;
     private static final int MS_DELAY = 1000 / FPS;
     
-    // instance variables per game
+    // instance variables
     private Stage gameStage; // new window
-    private Timeline loop;
+    private Timeline animation;
     private KeyCode currentKey = null;
+    private Level currentLevel;
     
-    protected int lives = 3;
-    protected int score = 0;
+    protected int lives = 3; // default 3 lives
+    protected int score = 0; // default score starts at 0
+    protected ArrayList<Level> levels = getLevels(); // list of levels
     
     
     @Override
     public void start(Stage primaryStage) {
         gameStage = new Stage();
-        StartMenu startMenu = new StartMenu();
+        StartMenu startMenu = new StartMenu(SIZE_X, SIZE_Y);
         gameStage.setScene(startMenu.getScene());
         gameStage.show();
     }
     
-    public void startGame() {
+    // Add any new level subclasses here to be included in the game
+    private ArrayList<Level> getLevels() {
+    		ArrayList<Level> levels = new ArrayList<Level>();
+    		levels.add(new Level_1());
+//    		levels.add(new Level_2());
     		
+    		return levels;
+    }
+    
+    
+    public void runGame() {
+    		for(Level currentLevel : levels) {
+    			this.currentLevel = currentLevel;
+    			
+    		}
     		
         // key handling per level scene
         currentLevel.getScene().setOnKeyPressed(e -> currentKey = e.getCode());
         currentLevel.getScene().setOnKeyReleased(e -> currentKey = null);
     		
         // game loop
-        loop = new Timeline(new KeyFrame(Duration.millis(MS_DELAY), e -> step()));
-        loop.setCycleCount(Timeline.INDEFINITE);
-        loop.play();
+        animation = new Timeline(new KeyFrame(Duration.millis(MS_DELAY), e -> step()));
+        animation.setCycleCount(Timeline.INDEFINITE);
+        animation.play();
     }
+    
+
     
 
     
@@ -151,59 +168,60 @@ public class Game extends Application {
 //
 //    }
 
-    private void step() {
-        paddle.move(currentKey);
-
-        // while paused after losing a life, freeze ball movement but keep paddle responsive
-        if (waitingForRespawn) {
-            return;
-        }
-
-        ball.move();
-
-        // check bottom of screen
-        if (ball.getView().getY() + 15 >= SIZE_Y) {
-            lives--;
-            if (lives <= 0) {
-                gameOver();
-                return;
-            } else {
-                resetBallWithDelay();
-                return;
-            }
-        }
-
-        // paddle collision
-        if (paddle.checkCollision(ball)) {
-            paddle.onCollision(ball);
-        }
-
-        // block collisions
-        Iterator<Block> blockIterator = myBlocks.iterator();
-        while (blockIterator.hasNext()) {
-            Block b = blockIterator.next();
-            if (!b.isDestroyed() && b.checkCollision(ball)) {
-                b.onCollision(ball);
-            }
-        }
-        
-        // powerup movement and collisions
-        Iterator<PowerUp> powerupIterator = myPowerups.iterator();
-        while (powerupIterator.hasNext()) {
-        	PowerUp p = powerupIterator.next();
-        	
-        	p.move();
-        	
-        	if (p.intersects(paddle.getView())) {
-				p.activatePower();
-			}
-        }
-
-        // check win condition
-        boolean allDestroyed = myBlocks.stream().allMatch(Block::isDestroyed);
-        if (allDestroyed) {
-            winScreen();
-        }
+    public void step() {
+    		currentLevel.step(currentKey);
+//        paddle.move(currentKey);
+//
+//        // while paused after losing a life, freeze ball movement but keep paddle responsive
+//        if (waitingForRespawn) {
+//            return;
+//        }
+//
+//        ball.move();
+//
+//        // check bottom of screen
+//        if (ball.getView().getY() + 15 >= SIZE_Y) {
+//            lives--;
+//            if (lives <= 0) {
+//                gameOver();
+//                return;
+//            } else {
+//                resetBallWithDelay();
+//                return;
+//            }
+//        }
+//
+//        // paddle collision
+//        if (paddle.checkCollision(ball)) {
+//            paddle.onCollision(ball);
+//        }
+//
+//        // block collisions
+//        Iterator<Block> blockIterator = blocks.iterator();
+//        while (blockIterator.hasNext()) {
+//            Block b = blockIterator.next();
+//            if (!b.isDestroyed() && b.checkCollision(ball)) {
+//                b.onCollision(ball);
+//            }
+//        }
+//        
+//        // powerup movement and collisions
+//        Iterator<PowerUp> powerupIterator = powerups.iterator();
+//        while (powerupIterator.hasNext()) {
+//        	PowerUp p = powerupIterator.next();
+//        	
+//        	p.move();
+//        	
+//        	if (p.intersects(paddle.getView())) {
+//				p.activatePower();
+//			}
+//        }
+//
+//        // check win condition
+//        boolean allDestroyed = blocks.stream().allMatch(Block::isDestroyed);
+//        if (allDestroyed) {
+//            winScreen();
+//        }
     }
 
     // MODIFIED RESET: adds 3-sec delay & lives text display
@@ -237,12 +255,12 @@ public class Game extends Application {
     }
 
     private void gameOver() {
-        loop.stop();
+        animation.stop();
         showEndScreen("GAME OVER");
     }
 
     private void winScreen() {
-        loop.stop();
+        animation.stop();
         showEndScreen("YOU WIN!");
     }
 
@@ -259,7 +277,7 @@ public class Game extends Application {
         Button restartButton = new Button("RESTART");
         restartButton.setLayoutX(SIZE_X / 2 - 40);
         restartButton.setLayoutY(300);
-        restartButton.setOnAction(e -> startGame());
+        restartButton.setOnAction(e -> runGame());
 
         root.getChildren().addAll(text, restartButton);
 //        gameStage.setScene(scene);

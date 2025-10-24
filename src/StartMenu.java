@@ -13,7 +13,7 @@ public class StartMenu extends Game {
 	private Scene startMenuScene;
 	private boolean startGame;
 
-	public StartMenu() {
+	public StartMenu(int size_x, int size_y) {
 		
 		synchronized(this) {
 			GridPane startMenuGridPane = new GridPane();
@@ -29,10 +29,10 @@ public class StartMenu extends Game {
 		    startMenuGridPane.setConstraints(playButton, 0, 1, 1, 1, HPos.CENTER, VPos.CENTER);
 		    
 		    // @TODO: change event handling to avoid inheritance
-		    playButton.setOnAction(e -> startGame());
+		    playButton.setOnAction(e -> runGame());
 		    
 		    startMenuGridPane.setAlignment(Pos.TOP_CENTER);
-		    startMenuScene = new Scene(startMenuGridPane, 480, 640, Color.BLACK);
+		    startMenuScene = new Scene(startMenuGridPane, size_x, size_y, Color.BLUE);
 		}
 
 	}
