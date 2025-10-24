@@ -88,6 +88,9 @@ public abstract class Level {
     	}
     	for(Ball ball : balls) {
     		ball.move();
+    		if(ball.getDy() == 0 && currentKey == KeyCode.SPACE) {
+    			ball.launch();
+    		}
     	}
 //
 //        // while paused after losing a life, freeze ball movement but keep paddle responsive

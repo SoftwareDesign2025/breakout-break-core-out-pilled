@@ -1,6 +1,8 @@
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -37,15 +39,13 @@ public class Game extends Application {
     protected int score = 0; // default score starts at 0
     protected ArrayList<Level> levels = getLevels(); // list of levels
     
-    
+    // brings up start menu, waits for New Game button press
     @Override
     public void start(Stage primaryStage) {
         gameStage = new Stage();
-//        StartMenu startMenu = new StartMenu(SIZE_X, SIZE_Y);
-//        gameStage.setScene(startMenu.getScene());
+        StartMenu startMenu = new StartMenu(SIZE_X, SIZE_Y, this);
+        gameStage.setScene(startMenu.getScene());
         gameStage.show();
-//        startMenu.waitForStart();
-        runGame();
     }
     
     // Add any new level subclasses here to be included in the game
