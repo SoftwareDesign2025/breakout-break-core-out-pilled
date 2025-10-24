@@ -1,9 +1,25 @@
 // abstract superclass for building each level
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Level {
 	
-	protected ArrayList<Block> blocks;
+	// Level map
+//	protected static final HashMap<Integer, Level> levels = getLevels();
+	
+	// Add levels to hashmap
+	protected HashMap<Integer, Level> getLevels() {
+		HashMap<Integer, Level> levels = new HashMap<Integer, Level>();
+//		levels.put(1, new Level_1());
+//		levels.put(2, new Level_2());
+//		levels.put(3, new Level_3());
+		
+		return levels;
+	}
+	
+	public Level(int levelNum) {
+		
+	}
 	
 	// level variables; // default values
 	protected int TOP_PADDING; // 
@@ -15,6 +31,7 @@ public class Level {
 	
 	protected int BLOCK_PADDING = 2;
 	
+	protected ArrayList<Block> blocks;
 	
 	public Level(int topPadding, int sidePadding, int col, int row, boolean powerups, boolean obstacles) {
 		this.TOP_PADDING = topPadding;

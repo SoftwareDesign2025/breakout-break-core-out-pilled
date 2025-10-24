@@ -15,115 +15,141 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class Game extends Application {
-
-    public static final int SIZE_X = 480;
-    public static final int SIZE_Y = 640;
-    public static final int FPS = 60;
-    public static final int MS_DELAY = 1000 / FPS;
-
-    private ArrayList<Block> myBlocks;
-    private Ball ball;
-    private Paddle paddle;
-    private KeyCode currentKey = null;
-
-    private int lives = 3; // start with 3 lives
-    private Stage gameStage;
-    private Timeline loop;
-
-    private boolean waitingForRespawn = false; // NEW FLAG
-    private Text livesText; // TEMPORARY TEXT DISPLAY
-
+	
+	// Launch game as application
     public static void main(String[] args) {
         launch(args);
     }
 
+    // publicly available game properties
+    private static final int SIZE_X = 480;
+    private static final int SIZE_Y = 640;
+    private static final int FPS = 60;
+    private static final int MS_DELAY = 1000 / FPS;
+    
+    // instance variables per game
+    private Stage gameStage; // new window
+    private Timeline loop;
+    private KeyCode currentKey = null;
+    
+    protected int lives = 3;
+    protected int score = 0;
+    
+    
     @Override
     public void start(Stage primaryStage) {
         gameStage = new Stage();
-        showStartMenu();
-    }
-
-    // show the initial menu
-    private void showStartMenu() {
-        Group menuRoot = new Group();
-        Scene menuScene = new Scene(menuRoot, SIZE_X, SIZE_Y, Color.BLACK);
-
-        Text title = new Text("BREAKOUT!");
-        title.setFont(new Font(40));
-        title.setFill(Color.WHITE);
-        title.setX(100);
-        title.setY(200);
-
-        Button playButton = new Button("PLAY");
-        playButton.setLayoutX(SIZE_X / 2 - 30);
-        playButton.setLayoutY(300);
-
-        playButton.setOnAction(e -> startGame());
-
-        menuRoot.getChildren().addAll(title, playButton);
-
-        gameStage.setScene(menuScene);
+        StartMenu startMenu = new StartMenu();
+        gameStage.setScene(startMenu.getScene());
         gameStage.show();
     }
-
-    // start the actual game
-    private void startGame() {
-        lives = 3; // reset lives
-
-        Group root = new Group();
-        Scene scene = new Scene(root, SIZE_X, SIZE_Y, Color.BLACK);
-
-        // create paddle
-        paddle = new Paddle(220, 628);
-        root.getChildren().add(paddle.asNode());
-
-        // create ball
-        ball = new Ball(240, 600, 3, -3);
-        root.getChildren().add(ball.getView());
-
-        // create blocks
-        Level defaultLevel = new Level(30, 30, 10, 10, false, false);
-        myBlocks = defaultLevel.getBlocks();
-        for (Block block : myBlocks) {
-            root.getChildren().add(block.asNode());
-        }
-        
-//      int blockWidth = 40;
-//      int blockHeight = 20;
-//      int padding = 2;
-//      int numBlocksX = 10;
-//      int numBlocksY = 5;
-//      int startX = 20; // left margin
-//      int startY = 30; // top margin
-
-		// generate blocks, add each Block obj to root
-//      for (int i = 0; i < numBlocksY; i++) {
-//          for (int j = 0; j < numBlocksX; j++) {
-//              Point p = new Point(startX + j * (blockWidth + padding), startY + i * (blockHeight + padding));
-//              Block b = new Block(numBlocksY - i, p, blockWidth, blockHeight, null);
-//              myBlocks.add(b);
-//              root.getChildren().add(b.asNode());
-//          }
-//      }
-
-        // LIVES TEXT (hidden by default)
-        livesText = new Text();
-        livesText.setFont(new Font(24));
-        livesText.setFill(Color.WHITE);
-        livesText.setVisible(false);
-        root.getChildren().add(livesText);
-
-        // key handling
-        scene.setOnKeyPressed(e -> currentKey = e.getCode());
-        scene.setOnKeyReleased(e -> currentKey = null);
-
-        gameStage.setScene(scene);
-
+    
+    public void startGame() {
+    		
+    		
+        // key handling per level scene
+        currentLevel.getScene().setOnKeyPressed(e -> currentKey = e.getCode());
+        currentLevel.getScene().setOnKeyReleased(e -> currentKey = null);
+    		
         // game loop
         loop = new Timeline(new KeyFrame(Duration.millis(MS_DELAY), e -> step()));
         loop.setCycleCount(Timeline.INDEFINITE);
         loop.play();
     }
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+//    private ArrayList<Block> myBlocks;
+//    private Ball ball;
+//    private Paddle paddle;
+//
+//
+//
+//    private boolean waitingForRespawn = false; // NEW FLAG
+//    private Text livesText; // TEMPORARY TEXT DISPLAY
+
+
+
+
+
+    // show the initial menu
+//    private void showStartMenu() {
+//        Group menuRoot = new Group();
+//        Scene menuScene = new Scene(menuRoot, SIZE_X, SIZE_Y, Color.BLACK);
+//
+//        Text title = new Text("BREAKOUT!");
+//        title.setFont(new Font(40));
+//        title.setFill(Color.WHITE);
+//        title.setX(100);
+//        title.setY(200);
+//
+//        Button playButton = new Button("PLAY");
+//        playButton.setLayoutX(SIZE_X / 2 - 30);
+//        playButton.setLayoutY(300);
+//
+//        playButton.setOnAction(e -> startGame());
+//
+//        menuRoot.getChildren().addAll(title, playButton);
+//        
+//    }
+
+//    // start the actual game
+//    public void startGame() {
+//        lives = 3; // reset lives
+//
+//        Group root = new Group();
+//        Scene scene = new Scene(root, SIZE_X, SIZE_Y, Color.BLACK);
+//
+//        // create paddle
+//        paddle = new Paddle(220, 628);
+//        root.getChildren().add(paddle.asNode());
+//
+//        // create ball
+//        ball = new Ball(240, 600, 3, -3);
+//        root.getChildren().add(ball.getView());
+//
+//        // create blocks
+//        Level defaultLevel = new Level(30, 30, 10, 10, false, false);
+//        myBlocks = defaultLevel.getBlocks();
+//        for (Block block : myBlocks) {
+//            root.getChildren().add(block.asNode());
+//        }
+//        
+//
+//        // LIVES TEXT (hidden by default)
+//        livesText = new Text();
+//        livesText.setFont(new Font(24));
+//        livesText.setFill(Color.WHITE);
+//        livesText.setVisible(false);
+//        root.getChildren().add(livesText);
+//
+//
+//
+//        gameStage.setScene(scene);
+//
+//
+//    }
 
     private void step() {
         paddle.move(currentKey);
@@ -224,6 +250,6 @@ public class Game extends Application {
         restartButton.setOnAction(e -> startGame());
 
         root.getChildren().addAll(text, restartButton);
-        gameStage.setScene(scene);
+//        gameStage.setScene(scene);
     }
 }
