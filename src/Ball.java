@@ -114,14 +114,14 @@ public class Ball implements Collidable {
     // allow game or other objects to set velocity directly (e.g., powerups)
     public void setVelocity(double angle) {
         // maintain speed magnitude for consistent gameplay
-    	if(speedMagnitude > 0) {
-        dx = speedMagnitude * Math.cos(angle);
-        dy = -1 * speedMagnitude * Math.sin(angle);
-    	}
-    	else {
-    		dx = BALL_LAUNCH_SPEED * Math.cos(angle);
-            dy = -1 * BALL_LAUNCH_SPEED * Math.sin(angle); 
-    	}
+    		if(speedMagnitude > 0) {
+    			dx = speedMagnitude * Math.cos(angle);
+        		dy = -1 * speedMagnitude * Math.sin(angle);
+    		}
+    		else {
+    			dx = BALL_LAUNCH_SPEED * Math.cos(angle);
+    			dy = -1 * BALL_LAUNCH_SPEED * Math.sin(angle); 
+    		}
     }
 
     public double getX() { return myView.getX(); }

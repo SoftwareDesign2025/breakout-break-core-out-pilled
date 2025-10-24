@@ -9,22 +9,25 @@ public abstract class Level {
 	
 	// Object lists for all levels:
 	protected ArrayList<Block> blocks = new ArrayList<Block>();
+	protected ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
 	protected ArrayList<PowerUp> powerUps = new ArrayList<PowerUp>();
 	protected ArrayList<Ball> balls = new ArrayList<Ball>();
 	protected ArrayList<Paddle> paddles = new ArrayList<Paddle>();
 	
 	protected Group root = new Group();
 	
+	protected int points = 0;
+	protected int livesLost = 0;
+	
 	// level variables; // default values
 	protected int TOP_PADDING = 30; // 30
 	protected int SIDE_PADDING = 36; // 36
 	protected int COLUMNS = 9; // 9
 	protected int BLOCK_PAD = 6; // 6
-	protected boolean levelComplete = false;
+	protected boolean levelComplete = false; // false
 	
 	// set per level:
 	protected int ROWS;
-	
 	
 	// PROTECTED METHODS:
 	
@@ -83,15 +86,61 @@ public abstract class Level {
 	
 	// update objects in level per frame
     public void step(KeyCode currentKey) {
-    	for(Paddle paddle : paddles) {
-    		paddle.move(currentKey);
-    	}
-    	for(Ball ball : balls) {
-    		ball.move();
-    		if(ball.getDy() == 0 && currentKey == KeyCode.SPACE) {
-    			ball.launch();
+    		
+    		// move paddle(s), check collision
+    		if(paddles.isEmpty()) {
+    			System.out.println("No paddles found in level");
     		}
-    	}
+    		else {
+    			for(Paddle paddle : paddles) {
+    				paddle.move(currentKey);
+    				for(Ball ball : balls) {
+    					if(paddle.checkCollision(ball)) {
+    						paddle.onCollision(ball);
+    					}
+    				}
+    			}
+    		}
+    
+    		// move ball(s), check bounds
+    		if(balls.isEmpty()) {
+    			System.out.println("No balls found in level");
+    		}
+    		else {
+    			for(Ball ball : balls) {
+    				ball.move();
+    				if(ball.getDy() == 0 && currentKey == KeyCode.SPACE) {
+    					ball.launch();
+    					}
+    			}
+    		}
+    		
+        // block collisions
+        Iterator<Block> blockIterator = blocks.iterator();
+        while (blockIterator.hasNext()) {
+        		Block b = blockIterator.next();
+        		for(Ball ball : balls) {
+            		if (!b.isDestroyed() && b.checkCollision(ball)) {
+            			b.onCollision(ball);
+            			points += b.hit();
+            		}
+        		}
+        	}
+	
+        // powerup movement and collisions
+        Iterator<PowerUp> powerupIterator = powerUps.iterator();
+        while (powerupIterator.hasNext()) {
+        		PowerUp p = powerupIterator.next();
+        		p.move();
+        		for(Paddle paddle : paddles) {
+        			if (p.intersects(paddle.getView())) {
+        				p.activatePower();
+        			}
+        		}
+        }
+    
+    }
+    
 //
 //        // while paused after losing a life, freeze ball movement but keep paddle responsive
 //        if (waitingForRespawn) {
@@ -112,38 +161,17 @@ public abstract class Level {
 //                }
 //        }
 //
-//        // paddle collision
-//        if (paddle.checkCollision(ball)) {
-//            paddle.onCollision(ball);
-//        }
+
 //
-//        // block collisions
-//        Iterator<Block> blockIterator = blocks.iterator();
-//        while (blockIterator.hasNext()) {
-//            Block b = blockIterator.next();
-//            if (!b.isDestroyed() && b.checkCollision(ball)) {
-//                b.onCollision(ball);
-//            }
-//        }
+
 //        
-//        // powerup movement and collisions
-//        Iterator<PowerUp> powerupIterator = powerUps.iterator();
-//        while (powerupIterator.hasNext()) {
-//        	PowerUp p = powerupIterator.next();
-//        	
-//        	p.move();
-//        	
-//        	if (p.intersects(paddle.getView())) {
-//				p.activatePower();
-//			}
-//        }
+
 //
 //        // check win condition
 //        boolean allDestroyed = blocks.stream().allMatch(Block::isDestroyed);
 //        if (allDestroyed) {
 //            winScreen();
 //        }
-    }
-	
+
+
 }
-	
