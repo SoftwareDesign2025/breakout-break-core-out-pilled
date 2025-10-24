@@ -56,7 +56,7 @@ public class Block implements Collidable {
     }
 
     // called when the ball hits this block
-    private int hit() {
+    protected int hit() {
         if (destroyed) return 0; // already gone
 
         myHealth -= 1;
