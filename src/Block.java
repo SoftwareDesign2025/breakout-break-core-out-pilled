@@ -15,14 +15,6 @@ public class Block implements Collidable {
 	// constants/getters for general block properties:
 	public static final int SIZE_X = 40;
 	public static final int SIZE_Y = 12;
-	
-	public static int getX() {
-		return SIZE_X;
-	}
-	
-	public static int getY() {
-		return SIZE_Y;
-	}
 
 	// local constants
     private static final int POINT_MULTIPLIER = 10;
@@ -35,7 +27,7 @@ public class Block implements Collidable {
     private PowerUp myPower; // can be null
     private ImageView myView;
 
-    public Block(int xCoord, int yCoord, int health, PowerUp power) {
+    public Block(int xCoord, int yCoord, int health) {
         try {
             Image img = new Image(new FileInputStream(String.format(IMAGE_RESOURCES, health)));
             myView = new ImageView(img);
@@ -52,7 +44,10 @@ public class Block implements Collidable {
 
         myHealth = health;
         myPoints = myHealth * POINT_MULTIPLIER;
-        myPower = power;
+    }
+    
+    public void setPowerup(PowerUp powerup) {
+    	myPower = powerup;
     }
 
     // show block in scene

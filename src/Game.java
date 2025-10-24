@@ -198,6 +198,7 @@ public class Game extends Application {
 				p.activatePower();
 			}
         }
+    
 
         // check win condition
         boolean allDestroyed = myBlocks.stream().allMatch(Block::isDestroyed);
