@@ -8,14 +8,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-public class StartMenu extends Game {
+public class StartMenu {
 	
 	private Scene startMenuScene;
 	private boolean startGame;
 
 	public StartMenu(int size_x, int size_y) {
 		
-		synchronized(this) {
 			GridPane startMenuGridPane = new GridPane();
 			startGame = false;
 			
@@ -29,16 +28,25 @@ public class StartMenu extends Game {
 		    startMenuGridPane.setConstraints(playButton, 0, 1, 1, 1, HPos.CENTER, VPos.CENTER);
 		    
 		    // @TODO: change event handling to avoid inheritance
-		    playButton.setOnAction(e -> runGame());
+		    playButton.setOnAction(e -> startGame = true);
 		    
 		    startMenuGridPane.setAlignment(Pos.TOP_CENTER);
 		    startMenuScene = new Scene(startMenuGridPane, size_x, size_y, Color.BLUE);
-		}
 
 	}
 	
 	public Scene getScene() {
 		return startMenuScene;
+	}
+	
+	public void waitForStart() {
+		while(!startGame) {
+			try {
+				Thread.sleep(100);
+			}
+			catch(InterruptedException e) {}
+		}
+		
 	}
     
 }

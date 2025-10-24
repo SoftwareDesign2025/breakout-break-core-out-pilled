@@ -14,11 +14,21 @@ public class Paddle implements Collidable {
     public static final int PADDLE_HEIGHT = 12;
     public static final int PADDLE_VELOCITY = 10;
     public static final String PADDLE_IMAGE = "resources/Paddle.png";
+    
+ // default screen bounds in case Game doesn't call a bounds-check method
+    private static final double DEFAULT_SCREEN_WIDTH = 480;
+    private static final double DEFAULT_SCREEN_HEIGHT = 640;
+    
+    // default paddle dimensions for default ball position
+    private static final double PADDLE_PADDING = 30;
+    private static final double DEFAULT_POS_X = (DEFAULT_SCREEN_WIDTH / 2) - (PADDLE_WIDTH / 2);
+	private static final double DEFAULT_POS_Y = (DEFAULT_SCREEN_HEIGHT - (PADDLE_HEIGHT + PADDLE_PADDING));
+	
 
     private ImageView myView;
-    private int xCoordinate;
+    private double xCoordinate;
 
-    public Paddle(int startX, int startY) {
+    public Paddle(double startX, double startY) {
         try {
             Image img = new Image(new FileInputStream(PADDLE_IMAGE));
             myView = new ImageView(img);
@@ -33,6 +43,11 @@ public class Paddle implements Collidable {
         myView.setY(startY);
 
         xCoordinate = startX;
+    }
+    
+    // paddle constructor with default position
+    public Paddle() {
+    	this(DEFAULT_POS_X, DEFAULT_POS_Y);
     }
 
     // getter for Game / collision checks
