@@ -179,12 +179,24 @@ public class Game extends Application {
         }
 
         // block collisions
-        Iterator<Block> iter = myBlocks.iterator();
-        while (iter.hasNext()) {
-            Block b = iter.next();
+        Iterator<Block> blockIterator = myBlocks.iterator();
+        while (blockIterator.hasNext()) {
+            Block b = blockIterator.next();
             if (!b.isDestroyed() && b.checkCollision(ball)) {
                 b.onCollision(ball);
             }
+        }
+        
+        // powerup movement and collisions
+        Iterator<PowerUp> powerupIterator = myPowerups.iterator();
+        while (powerupIterator.hasNext()) {
+        	PowerUp p = powerupIterator.next();
+        	
+        	p.move();
+        	
+        	if (p.intersects(paddle.getView())) {
+				p.activatePower();
+			}
         }
 
         // check win condition
