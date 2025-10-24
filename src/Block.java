@@ -75,6 +75,13 @@ public class Block implements Collidable {
             }
 
             return myPoints; // give points only when destroyed
+        } else {
+        	try {
+                Image img = new Image(new FileInputStream(String.format(IMAGE_RESOURCES, myHealth)));
+                myView.setImage(img);
+            } catch (FileNotFoundException e) {
+                System.out.println("Block image not found for health: " + myHealth);
+            }
         }
 
         return 0;

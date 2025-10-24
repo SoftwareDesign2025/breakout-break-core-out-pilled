@@ -1,36 +1,26 @@
-import java.awt.Point;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-
 /**
- * On paddle collision with this object, it should call a paddle method to change its size
+ * On paddle collision with this object, changes the size of the paddle for a duration
  * 
  * @author Caelan Duncan
  */
 public class SizePowerUp extends PowerUp {
-	public static final String POWER_IMAGE = "resources/sizepower.gif";
+	private static final double SIZE_INCREASE = 1.5;
+	private static final long DURATION = 15000;
 	
+	protected String powerName = "size";
 	private Paddle paddle;
 
-	public SizePowerUp(Point pos, Paddle paddle) {
-		super(pos);
-		
-		try {
-			Image img = new Image(new FileInputStream(POWER_IMAGE));
-			myView = new ImageView(img);
-		} 
-		catch (FileNotFoundException e) {}
-		
-		this.paddle = paddle;
+	public SizePowerUp(int xCoord, int yCoord, Paddle paddle) {		
+		super(xCoord, yCoord);
+        
+        this.paddle = paddle;
 	}
 	
 	@Override
 	public void activatePower() {
-		paddle.getView().setScaleX(paddle.getView().getScaleX() * 2);
+		super.activatePower();
+		
+		paddle.getView().setScaleX(paddle.getView().getScaleX() * SIZE_INCREASE);
 		
 		try {
 			Thread.sleep(DURATION);
@@ -40,6 +30,6 @@ public class SizePowerUp extends PowerUp {
 	}
 	
 	private void deactivatePower() {
-		paddle.getView().setScaleX(paddle.getView().getScaleX() / 2);
+		paddle.getView().setScaleX(paddle.getView().getScaleX() / SIZE_INCREASE);
 	}
 }
