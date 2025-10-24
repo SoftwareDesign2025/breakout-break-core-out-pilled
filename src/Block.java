@@ -103,7 +103,7 @@ public class Block implements Collidable {
 
     @Override
     public void onCollision(Ball ball) {
-        hit();         // reduce health / mark destroyed
+//        hit();         // reduce health / mark destroyed - commented, called from Level
         
         Bounds bounds1 = myView.getBoundsInParent();
         Bounds bounds2 = ball.getView().getBoundsInParent();
