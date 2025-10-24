@@ -1,8 +1,9 @@
-import javafx.scene.Node;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 
 /**
  * Simple Ball class for Breakout.
@@ -13,15 +14,27 @@ import java.io.FileNotFoundException;
 public class Ball implements Collidable {
     private static final String BALL_IMAGE = "resources/ball.gif";
     private static final int BALL_SIZE = 15;
-
+    private static final int ANGLE_RANGE = 60;
+    private static final int BALL_LAUNCH_SPEED = 4;
+    
     // default screen bounds in case Game doesn't call a bounds-check method
-    // you can override/check with Game calling checkBounds(screenW, screenH)
     private static final double DEFAULT_SCREEN_WIDTH = 480;
     private static final double DEFAULT_SCREEN_HEIGHT = 640;
+    
+    // default paddle dimensions for default ball position
+    private static final double PADDLE_HEIGHT = 12;
+    private static final double PADDLE_WIDTH = 92;
+    private static final double PADDLE_PADDING = 30;
+    private static final double DEFAULT_POS_X = (DEFAULT_SCREEN_WIDTH / 2) - (BALL_SIZE / 2);
+	private static final double DEFAULT_POS_Y = (DEFAULT_SCREEN_HEIGHT - (PADDLE_HEIGHT + PADDLE_PADDING + BALL_SIZE));
+	
 
     private ImageView myView;
     private double dx;
     private double dy;
+
+    // store initial speed magnitude for consistent respawns
+    private double speedMagnitude;
 
     // constructor sets start position and starting velocity
     public Ball(double startX, double startY, double startDX, double startDY) {
@@ -40,9 +53,21 @@ public class Ball implements Collidable {
 
         dx = startDX;
         dy = startDY;
+
+        speedMagnitude = Math.sqrt(dx*dx + dy*dy); // store initial speed
+    }
+    
+    // constructor override for default (centered) position, 0 velocity
+    public Ball() {
+    	this(DEFAULT_POS_X, DEFAULT_POS_Y, 0, 0);
+    }
+    
+    public void launch() {
+    	double angle = Math.toRadians((Math.random() * ANGLE_RANGE) + ANGLE_RANGE);
+    	setVelocity(angle);
     }
 
-    // simple getter for the view (used by Game and Collidable checks)
+    // getter for the view (used by Game and Collidable)
     @Override
     public ImageView getView() {
         return myView;
@@ -50,14 +75,20 @@ public class Ball implements Collidable {
 
     // move the ball by its velocity (very simple, no elapsed time)
     // Game can call this every frame
+    // updated move so it moves in smaller chunks to avoid skipping collisions
     public void move() {
-        myView.setX(myView.getX() + dx);
-        myView.setY(myView.getY() + dy);
+        int steps = (int) Math.ceil(Math.max(Math.abs(dx), Math.abs(dy))); 
+        double stepX = dx / steps;
+        double stepY = dy / steps;
 
+        for (int i = 0; i < steps; i++) {
+            myView.setX(myView.getX() + stepX);
+            myView.setY(myView.getY() + stepY);
+        }
         // keep it from leaving the screen using defaults (Game can do nicer checks)
         checkBounds((int) DEFAULT_SCREEN_WIDTH, (int) DEFAULT_SCREEN_HEIGHT);
     }
-
+    
     // check and bounce on screen edges (Game can call this with real window size)
     public void checkBounds(int screenWidth, int screenHeight) {
         double x = myView.getX();
@@ -67,43 +98,42 @@ public class Ball implements Collidable {
         if (x <= 0 || x + BALL_SIZE >= screenWidth) {
             reverseX();
         }
-
         // top
         if (y <= 0) {
             reverseY();
         }
-
-        // bottom (fell off) -> for now just reverse Y so it doesn't disappear.
-        // In your Game you might want to treat this as "lose life" instead.
+        // bottom (fell off)
         if (y + BALL_SIZE >= screenHeight) {
             reverseY();
         }
     }
 
-    // flip horizontal speed
-    public void reverseX() {
-        dx = -dx;
-    }
-
-    // flip vertical speed
-    public void reverseY() {
-        dy = -dy;
-    }
+    public void reverseX() { dx = -dx; }
+    public void reverseY() { dy = -dy; }
 
     // allow game or other objects to set velocity directly (e.g., powerups)
-    public void setVelocity(double newDX, double newDY) {
-        dx = newDX;
-        dy = newDY;
+    public void setVelocity(double angle) {
+        // maintain speed magnitude for consistent gameplay
+    	if(speedMagnitude > 0) {
+        dx = speedMagnitude * Math.cos(angle);
+        dy = -1 * speedMagnitude * Math.sin(angle);
+    	}
+    	else {
+    		dx = BALL_LAUNCH_SPEED * Math.cos(angle);
+            dy = -1 * BALL_LAUNCH_SPEED * Math.sin(angle); 
+    	}
     }
 
-    // expose position-ish methods if needed (keeps them simple)
     public double getX() { return myView.getX(); }
     public double getY() { return myView.getY(); }
+    
+    public void setX(double x) { myView.setX(x); }
+    public void setY(double y) { myView.setY(y); }
+    
+    public double getDx() { return dx; }
+    public double getDy() { return dy; }
 
-    // ----------------------
     // Collidable implementation
-    // ----------------------
-
     // check intersection with another ball (or any Collidable who uses Ball)
     @Override
     public boolean checkCollision(Ball other) {
@@ -111,15 +141,8 @@ public class Ball implements Collidable {
         return myView.getBoundsInParent().intersects(other.getView().getBoundsInParent());
     }
 
-    // default reaction when something calls onCollision(thisBall)
-    // Usually Game will call otherObject.onCollision(ball) (not ball.onCollision(other)).
-    // We implement this so Ball itself can be treated as a collidable if needed.
     @Override
     public void onCollision(Ball other) {
-        // pretty simple: if another ball/object hits this ball, flip vertical direction
-        // you could add more advanced physics later
         reverseY();
     }
-
-
 }

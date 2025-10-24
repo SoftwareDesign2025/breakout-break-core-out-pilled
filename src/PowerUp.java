@@ -1,7 +1,8 @@
-import java.awt.Point;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
-import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 /**
@@ -10,43 +11,49 @@ import javafx.scene.image.ImageView;
  * 
  * @author Caelan Duncan
  */
-public class PowerUp {
-	public static final int MOVING_VELOCITY = 80;
-	public static final long DURATION = 15000;
+public abstract class PowerUp {
+	protected static final int MOVING_VELOCITY = 80;
+	protected static final int SIZE = 12;
+	protected static final String POWER_IMAGE = "resources/%spower.gif";
 	
+	protected String powerName;
 	protected ImageView myView;
-	protected Point2D myVelocity;
+	protected int myVelocity;
 	
-	public PowerUp(Point pos) {
-		myVelocity = new Point2D(0, 0);
+	public PowerUp(int xCoord, int yCoord) {
+		try {
+			Image img = new Image(new FileInputStream(String.format(POWER_IMAGE, powerName)));
+			myView = new ImageView(img);
+		} 
+		catch (FileNotFoundException e) {}
+		
+		myView.setFitWidth(SIZE);
+        myView.setFitHeight(SIZE);
+        myView.setX(xCoord);
+        myView.setY(yCoord);
+		
+		myVelocity = 0;
 	}
 	
 	public void drop() {
-		myVelocity = new Point2D(0, MOVING_VELOCITY);
+		myVelocity = MOVING_VELOCITY;
 	}
 	
-	public void move(double elapsedTime) {
-		myView.setY(myView.getY() + myVelocity.getY() * elapsedTime);
+	public void move() {
+		myView.setY(myView.getY() + myVelocity);
 	}
 	
 	public Node getView() {
 		return myView;
 	}
 	
-	public boolean intersects(ImageView other) {
+	public boolean intersects(Node other) {
 		return myView.getBoundsInParent().intersects(other.getBoundsInParent());
 	}
 	
-	/**
-	 * When this returns, the effect that was originally put in place should be reverted.
-	 * 
-	 * @return	true when the duration has passed
-	 */
-	public boolean powerUpTimer() {
-		try {
-			Thread.sleep(DURATION);
-		} catch (InterruptedException e) {}
-		
-		return true;
+	public void activatePower() {
+		myView.setX(0);
+		myView.setY(0);
+		myView.setVisible(false);
 	}
 }
