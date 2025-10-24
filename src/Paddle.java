@@ -10,9 +10,9 @@ import java.io.FileNotFoundException;
  * Implements Collidable so the game can check collisions easily.
  */
 public class Paddle implements Collidable {
-    public static int PADDLE_WIDTH = 92;
-    public static int PADDLE_HEIGHT = 12;
-    public static final int PADDLE_VELOCITY = 20;
+    public static final int PADDLE_WIDTH = 92;
+    public static final int PADDLE_HEIGHT = 12;
+    public static final int PADDLE_VELOCITY = 10;
     public static final String PADDLE_IMAGE = "resources/Paddle.png";
 
     private ImageView myView;

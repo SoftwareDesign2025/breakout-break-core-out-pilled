@@ -48,7 +48,7 @@ public class Level {
 
 		for(int i = 0; i < length; i++) {
 			xCoord = SIDE_PADDING + ((Block.SIZE_X + BLOCK_PADDING) * i);
-			Block b = new Block(xCoord, yCoord, health, null);
+			Block b = new Block(xCoord, yCoord, health);
 			blocks.add(b);
 		}
 	}
