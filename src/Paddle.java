@@ -4,6 +4,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Random;
 
 /**
  * Simple paddle that moves left/right and can be hit by the ball.
@@ -12,13 +13,30 @@ import java.io.FileNotFoundException;
 public class Paddle implements Collidable {
     public static int PADDLE_WIDTH = 92;
     public static int PADDLE_HEIGHT = 12;
-    public static final int PADDLE_VELOCITY = 20;
+    public static final int PADDLE_VELOCITY = 7;
     public static final String PADDLE_IMAGE = "resources/Paddle.png";
-
+    public static final int MIN_RANDOMIZING = -5;
+    public static final int MAX_RANDOMIZING = 5;
     private ImageView myView;
-    private int xCoordinate;
+    private double xCoordinate;
+    private double yCoordinate;
+    
+    // default screen bounds in case Game doesn't call a bounds-check method
+    private static final double DEFAULT_SCREEN_WIDTH = 480;
+    private static final double DEFAULT_SCREEN_HEIGHT = 640;
+    
+    // default paddle dimensions for default ball position
+    private static final double PADDLE_PADDING = 30;
+    private static final double DEFAULT_POS_X = (DEFAULT_SCREEN_WIDTH / 2) - (PADDLE_WIDTH / 2);
+	private static final double DEFAULT_POS_Y = (DEFAULT_SCREEN_HEIGHT - (PADDLE_HEIGHT + PADDLE_PADDING));
 
-    public Paddle(int startX, int startY) {
+    /*
+     * method: Paddle (constructor)
+     * arguments (startX, startY) represent the starting X and Y coordinate of the paddle
+     * assumptions: There is an image in the resources folder titled Paddle.png
+     *
+     */
+    public Paddle(double startX, double startY) {
         try {
             Image img = new Image(new FileInputStream(PADDLE_IMAGE));
             myView = new ImageView(img);
@@ -34,6 +52,11 @@ public class Paddle implements Collidable {
 
         xCoordinate = startX;
     }
+    
+    // paddle constructor with default position
+    public Paddle() {
+    	this(DEFAULT_POS_X, DEFAULT_POS_Y);
+    }
 
     // getter for Game / collision checks
     public Node asNode() {
@@ -41,6 +64,11 @@ public class Paddle implements Collidable {
     }
 
     // move paddle based on key input
+    /*
+     * method: move
+     * inputs: a KeyCode which represents a key on the keyboard the player presses
+     * outputs: moves the paddle object
+     * */
     public void move(KeyCode code) {
         if (code == KeyCode.LEFT) {
             xCoordinate -= PADDLE_VELOCITY;
@@ -60,8 +88,13 @@ public class Paddle implements Collidable {
 
     @Override
     public void onCollision(Ball ball) {
-        // just make ball bounce up
+        // just make ball bounce up and have a 50/50 chance of changing direction
         ball.reverseY();
+        
+        double angle = Math.atan(ball.getDy() / ball.getDx());
+        double angleModifier = (Math.random() * .087) - .04;
+        
+        ball.setVelocity(angle + angleModifier);
     }
 
     @Override

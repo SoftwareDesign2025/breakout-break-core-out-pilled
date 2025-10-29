@@ -14,11 +14,20 @@ import javafx.scene.image.ImageView;
 public class Ball implements Collidable {
     private static final String BALL_IMAGE = "resources/ball.gif";
     private static final int BALL_SIZE = 15;
-
+    private static final int ANGLE_RANGE = 60;
+    private static final int BALL_LAUNCH_SPEED = 6;
     
     // default screen bounds in case Game doesn't call a bounds-check method
     private static final double DEFAULT_SCREEN_WIDTH = 480;
     private static final double DEFAULT_SCREEN_HEIGHT = 640;
+    
+    // default paddle dimensions for default ball position
+    private static final double PADDLE_HEIGHT = 12;
+    private static final double PADDLE_WIDTH = 92;
+    private static final double PADDLE_PADDING = 30;
+    private static final double DEFAULT_POS_X = (DEFAULT_SCREEN_WIDTH / 2) - (BALL_SIZE / 2);
+	private static final double DEFAULT_POS_Y = (DEFAULT_SCREEN_HEIGHT - (PADDLE_HEIGHT + PADDLE_PADDING + BALL_SIZE + 2));
+	
 
     private ImageView myView;
     private double dx;
@@ -46,6 +55,16 @@ public class Ball implements Collidable {
         dy = startDY;
 
         speedMagnitude = Math.sqrt(dx*dx + dy*dy); // store initial speed
+    }
+    
+    // constructor override for default (centered) position, 0 velocity
+    public Ball() {
+    	this(DEFAULT_POS_X, DEFAULT_POS_Y, 0, 0);
+    }
+    
+    public void launch() {
+    	double angle = Math.toRadians((Math.random() * ANGLE_RANGE) + ANGLE_RANGE);
+    	setVelocity(angle);
     }
 
     // getter for the view (used by Game and Collidable)
@@ -93,17 +112,26 @@ public class Ball implements Collidable {
     public void reverseY() { dy = -dy; }
 
     // allow game or other objects to set velocity directly (e.g., powerups)
-    public void setVelocity(double newDX, double newDY) {
+    public void setVelocity(double angleRad) {
         // maintain speed magnitude for consistent gameplay
-        double angle = Math.atan2(newDY, newDX);
-        dx = speedMagnitude * Math.cos(angle);
-        dy = speedMagnitude * Math.sin(angle);
+    		if(speedMagnitude > 0) {
+    			dx = speedMagnitude * Math.cos(angleRad);
+        		dy = -1 * speedMagnitude * Math.sin(angleRad);
+    		}
+    		else {
+    			dx = BALL_LAUNCH_SPEED * Math.cos(angleRad);
+    			dy = -1 * BALL_LAUNCH_SPEED * Math.sin(angleRad); 
+    		}
     }
 
     public double getX() { return myView.getX(); }
     public double getY() { return myView.getY(); }
-
     
+    public void setX(double x) { myView.setX(x); }
+    public void setY(double y) { myView.setY(y); }
+    
+    public double getDx() { return dx; }
+    public double getDy() { return dy; }
 
     // Collidable implementation
     // check intersection with another ball (or any Collidable who uses Ball)
