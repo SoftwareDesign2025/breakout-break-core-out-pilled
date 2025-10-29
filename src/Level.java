@@ -16,15 +16,13 @@ public abstract class Level {
 	
 	protected Group root = new Group();
 	
-	protected int points = 0;
-	protected int livesLost = 0;
+	protected int pointsPerStep = 0;
 	
 	// level variables; // default values
 	protected int TOP_PADDING = 30; // 30
 	protected int SIDE_PADDING = 36; // 36
 	protected int COLUMNS = 9; // 9
 	protected int BLOCK_PAD = 6; // 6
-	protected boolean levelComplete = false; // false
 	
 	// set per level:
 	protected int ROWS;
@@ -38,11 +36,11 @@ public abstract class Level {
 		root.getChildren().add(p.asNode());
 	}
 	
-	// generate default blocks in rows and columns
+	// generate default blocks in rows and columns (for Lvl 1)
 	protected void generateBlocks(int rows, int columns) {
 		// Row generation
 		for(int i = 0; i < rows; i++) {
-			makeRow(i, columns, blocks);
+			makeRow(i, columns, 1, blocks);
 		}
 	}
 	
@@ -52,10 +50,9 @@ public abstract class Level {
 	}
 	
 	// add block objects by row to blocks array
-	protected void makeRow(int row, int length, ArrayList<Block> blocks) {
+	protected void makeRow(int row, int length, int health, ArrayList<Block> blocks) {
 		int yCoord = TOP_PADDING + ((Block.SIZE_Y + BLOCK_PAD) * row);
 		int xCoord;
-		int health = 1;
 
 		for(int i = 0; i < length; i++) {
 			xCoord = SIDE_PADDING + ((Block.SIZE_X + BLOCK_PAD) * i);
@@ -74,7 +71,8 @@ public abstract class Level {
 	
 	// check for level completed
 	public boolean isComplete() {
-		return levelComplete;
+		boolean allDestroyed = blocks.stream().allMatch(Block::isDestroyed);
+		return allDestroyed;
 	}
 	
 	// add a Ball object
@@ -85,7 +83,9 @@ public abstract class Level {
 	}
 	
 	// update objects in level per frame
-    public void step(KeyCode currentKey) {
+    public int step(KeyCode currentKey) {
+    		
+    		pointsPerStep = 0;
     		
     		// move paddle(s), check collision
     		if(paddles.isEmpty()) {
@@ -122,7 +122,7 @@ public abstract class Level {
         		for(Ball ball : balls) {
             		if (!b.isDestroyed() && b.checkCollision(ball)) {
             			b.onCollision(ball);
-            			points += b.hit();
+            			pointsPerStep += b.hit();
             		}
         		}
         	}
@@ -140,7 +140,11 @@ public abstract class Level {
         			}
         		}
         }
+        return pointsPerStep;
+    }
     
+    public void pauseLevel() {
+    	
     }
     
 //
