@@ -27,15 +27,18 @@ public class Game extends Application {
     private KeyCode currentKey = null;
     private Level currentLevel;
     
-    protected int lives = 3; // default 3 lives
-    protected int score = 0; // default score starts at 0
+    protected GameData gameData;
+    protected StartMenu startMenu;
+    protected int stepScore = 0;
     protected ArrayList<Level> levels = getLevels(); // list of levels
+    protected Scene levelScene;
     
     // brings up start menu, waits for New Game button press
     @Override
     public void start(Stage primaryStage) {
         gameStage = new Stage();
-        StartMenu startMenu = new StartMenu(SIZE_X, SIZE_Y, this);
+        startMenu = new StartMenu(SIZE_X, SIZE_Y, this);
+//        PauseMenu pauseMenu = new PauseMenu(SIZE_X, SIZE_Y, this);
         gameStage.setScene(startMenu.getScene());
         gameStage.show();
     }
@@ -44,16 +47,19 @@ public class Game extends Application {
     private ArrayList<Level> getLevels() {
     		ArrayList<Level> levels = new ArrayList<Level>();
     		levels.add(new Level_1());
-    		levels.add(new Level_2());
+//    		levels.add(new Level_2());
     		
     		return levels;
     }
     
     
     public void runGame() {
-    		this.currentLevel = levels.get(0);
     		
-    		Scene levelScene = new Scene(currentLevel.getRoot(), SIZE_X, SIZE_Y, Color.BLACK);
+    		gameData = new GameData();
+    		
+    		this.currentLevel = levels.get(gameData.level);
+    		
+    		levelScene = new Scene(currentLevel.getRoot(), SIZE_X, SIZE_Y, Color.BLACK);
     		gameStage.setScene(levelScene);
     		
         // key handling per level scene
@@ -66,8 +72,25 @@ public class Game extends Application {
         animation.play();
     }
     
+    public void pause() {
+    		animation.pause();
+    		gameStage.setScene(startMenu.getScene());
+    }
+    
+    public void resume() {
+    		gameStage.setScene(levelScene);
+    		animation.play();
+    }
+    
     public void step() {
-    		currentLevel.step(currentKey);
+    		if(currentKey == KeyCode.ESCAPE) {
+    			pause();
+    			currentKey = null;
+    		}
+    		stepScore = currentLevel.step(currentKey);
+    		gameData.score += stepScore;
+    		
+    		
     }
 //        paddle.move(currentKey);
 //
