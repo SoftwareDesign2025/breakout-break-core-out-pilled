@@ -124,6 +124,9 @@ public abstract class Level {
             			b.onCollision(ball);
             			pointsPerStep += b.hit();
             		}
+            		if(currentKey == KeyCode.BACK_SLASH && !b.isDestroyed()) {
+            			b.hit();
+            		}
         		}
         	}
         

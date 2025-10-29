@@ -25,13 +25,15 @@ public class Game extends Application {
     private Stage gameStage; // new window
     private Timeline animation;
     private KeyCode currentKey = null;
-    private Level currentLevel;
     
-    protected GameData gameData;
+    protected GameData gameData = new GameData();
     protected StartMenu startMenu;
     protected int stepScore = 0;
     protected ArrayList<Level> levels = getLevels(); // list of levels
+    private Level currentLevel = levels.get(gameData.level);
     protected Scene levelScene;
+
+
     
     // brings up start menu, waits for New Game button press
     @Override
@@ -47,18 +49,14 @@ public class Game extends Application {
     private ArrayList<Level> getLevels() {
     		ArrayList<Level> levels = new ArrayList<Level>();
     		levels.add(new Level_1());
-//    		levels.add(new Level_2());
+    		levels.add(new Level_2());
     		
     		return levels;
     }
     
     
     public void runGame() {
-    		
-    		gameData = new GameData();
-    		
-    		this.currentLevel = levels.get(gameData.level);
-    		
+
     		levelScene = new Scene(currentLevel.getRoot(), SIZE_X, SIZE_Y, Color.BLACK);
     		gameStage.setScene(levelScene);
     		
@@ -82,6 +80,18 @@ public class Game extends Application {
     		animation.play();
     }
     
+    private void nextLevel() {
+    		animation.pause();
+    		gameData.level += 1;
+    		try {
+    			this.currentLevel = levels.get(gameData.level);
+    			runGame();
+    		}
+			catch(IndexOutOfBoundsException e) {
+				System.out.println("No more levels"); 
+			}
+    }
+    
     public void step() {
     		if(currentKey == KeyCode.ESCAPE) {
     			pause();
@@ -89,8 +99,9 @@ public class Game extends Application {
     		}
     		stepScore = currentLevel.step(currentKey);
     		gameData.score += stepScore;
-    		
-    		
+    		if(currentLevel.isComplete()) {
+    				nextLevel();
+    		}
     }
 //        paddle.move(currentKey);
 //
