@@ -15,12 +15,15 @@ public abstract class PowerUp {
 	protected static final int MOVING_VELOCITY = 80;
 	protected static final int SIZE = 12;
 	protected static final String POWER_IMAGE = "resources/%spower.gif";
+	protected static final long TIME_LIMIT = 15000;
 	
 	protected String powerName;
 	protected ImageView myView;
 	protected int myVelocity;
 	
-	public PowerUp(int xCoord, int yCoord) {
+	protected long start;
+	
+	public PowerUp() {
 		try {
 			Image img = new Image(new FileInputStream(String.format(POWER_IMAGE, powerName)));
 			myView = new ImageView(img);
@@ -29,10 +32,13 @@ public abstract class PowerUp {
 		
 		myView.setFitWidth(SIZE);
         myView.setFitHeight(SIZE);
-        myView.setX(xCoord);
-        myView.setY(yCoord);
 		
 		myVelocity = 0;
+	}
+	
+	public void setLocation(double xCoord, double yCoord) {
+		myView.setX(xCoord);
+        myView.setY(yCoord);
 	}
 	
 	public void drop() {
@@ -41,6 +47,9 @@ public abstract class PowerUp {
 	
 	public void move() {
 		myView.setY(myView.getY() + myVelocity);
+		long now = System.currentTimeMillis();
+		if (now - start > TIME_LIMIT)
+			deactivatePower();
 	}
 	
 	public Node getView() {
@@ -55,5 +64,8 @@ public abstract class PowerUp {
 		myView.setX(0);
 		myView.setY(0);
 		myView.setVisible(false);
+		start = System.currentTimeMillis();
 	}
+	
+	protected abstract void deactivatePower();
 }
