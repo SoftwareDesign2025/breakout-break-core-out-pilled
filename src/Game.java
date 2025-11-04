@@ -1,12 +1,18 @@
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
 import java.util.ArrayList;
+import javafx.scene.control.Button;
+
 
 public class Game extends Application {
 	
@@ -31,6 +37,9 @@ public class Game extends Application {
     protected int stepScore = 0;
     protected ArrayList<Level> levels = getLevels(); // list of levels
     private Level currentLevel = levels.get(gameData.level);
+    
+    
+    protected Scene gameScene;
     protected Scene levelScene;
 
 
@@ -56,6 +65,8 @@ public class Game extends Application {
     
     public void runGame() {
     	levelScene = new Scene(currentLevel.getRoot(), SIZE_X, SIZE_Y, Color.BLACK);
+    	
+    	
     	gameStage.setScene(levelScene);
     	
     	// key handling per level scene
@@ -87,6 +98,7 @@ public class Game extends Application {
     		}
 			catch(IndexOutOfBoundsException e) {
 				System.out.println("No more levels"); 
+				gameOver(true);
 			}
     }
     
@@ -98,15 +110,30 @@ public class Game extends Application {
     		if(currentLevel.noBalls()) {
     			loseLife();
     		}
-    		stepScore = currentLevel.step(currentKey);
-    		gameData.score += stepScore;
+    		else {
+    			stepScore = currentLevel.step(currentKey);
+    			gameData.score += stepScore;
+    		}
     		if(currentLevel.isComplete()) {
     				nextLevel();
     		}
     }
     
     private void loseLife() {
-    	
+    	gameData.lives -= 1;
+    	if(gameData.lives <= 0) {
+    		gameOver(false);
+    	}
+    	else {
+    		currentLevel.addBall();
+    	}
+    }
+    
+    private void gameOver(boolean gameWon) {
+    	if(gameWon) {
+    		winScreen();
+    	}
+    	else { loseScreen(); }
     }
 //        paddle.move(currentKey);
 //
@@ -191,32 +218,31 @@ public class Game extends Application {
 //        delay.play();
 //    }
 //
-//    private void gameOver() {
-//        animation.stop();
-//        showEndScreen("GAME OVER");
-//    }
-//
-//    private void winScreen() {
-//        animation.stop();
-//        showEndScreen("YOU WIN!");
-//    }
-//
-//    private void showEndScreen(String message) {
-//        Group root = new Group();
-//        Scene scene = new Scene(root, SIZE_X, SIZE_Y, Color.BLACK);
-//
-//        Text text = new Text(message);
-//        text.setFont(new Font(40));
-//        text.setFill(Color.WHITE);
-//        text.setX(80);
-//        text.setY(200);
-//
-//        Button restartButton = new Button("RESTART");
-//        restartButton.setLayoutX(SIZE_X / 2 - 40);
-//        restartButton.setLayoutY(300);
-//        restartButton.setOnAction(e -> runGame());
-//
-//        root.getChildren().addAll(text, restartButton);
-////        gameStage.setScene(scene);
-//    }
+    private void loseScreen() {
+        animation.stop();
+        showEndScreen("GAME OVER");
+    }
+    private void winScreen() {
+        animation.stop();
+        showEndScreen("YOU WIN!");
+    }
+
+    private void showEndScreen(String message) {
+        Group root = new Group();
+        Scene scene = new Scene(root, SIZE_X, SIZE_Y, Color.BLACK);
+
+        Text text = new Text(message);
+        text.setFont(new Font(40));
+        text.setFill(Color.WHITE);
+        text.setX(80);
+        text.setY(200);
+
+        Button restartButton = new Button("RESTART");
+        restartButton.setLayoutX(SIZE_X / 2 - 40);
+        restartButton.setLayoutY(300);
+//        restartButton.setOnAction(e -> { this.runGame(); });
+
+        root.getChildren().addAll(text, restartButton);
+        gameStage.setScene(scene);
+    }
 }
