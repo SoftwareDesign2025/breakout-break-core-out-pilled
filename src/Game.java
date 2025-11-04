@@ -27,7 +27,7 @@ public class Game extends Application {
     private KeyCode currentKey = null;
     
     protected GameData gameData = new GameData();
-    protected StartMenu startMenu;
+    protected Menu menu;
     protected int stepScore = 0;
     protected ArrayList<Level> levels = getLevels(); // list of levels
     private Level currentLevel = levels.get(gameData.level);
@@ -39,9 +39,8 @@ public class Game extends Application {
     @Override
     public void start(Stage primaryStage) {
         gameStage = new Stage();
-        startMenu = new StartMenu(SIZE_X, SIZE_Y, this);
-//        PauseMenu pauseMenu = new PauseMenu(SIZE_X, SIZE_Y, this);
-        gameStage.setScene(startMenu.getScene());
+        menu = new Menu(SIZE_X, SIZE_Y, this);
+        gameStage.setScene(menu.getScene());
         gameStage.show();
     }
     
@@ -72,7 +71,7 @@ public class Game extends Application {
     
     public void pause() {
     		animation.pause();
-    		gameStage.setScene(startMenu.getScene());
+    		gameStage.setScene(menu.getScene());
     }
     
     public void resume() {

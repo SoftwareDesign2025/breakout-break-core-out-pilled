@@ -29,31 +29,37 @@ public abstract class Level {
 	
 	// PROTECTED METHODS:
 	
-	// add Paddle
-	protected void addPaddle() {
+	// add/remove Paddle
+	public void addPaddle() {
 		Paddle p = new Paddle();
 		paddles.add(p);
 		root.getChildren().add(p.asNode());
 	}
 	
-	// generate default blocks in rows and columns (for Lvl 1)
-	protected void generateBlocks(int rows, int columns) {
-		// Row generation
-		for(int i = 0; i < rows; i++) {
-			makeRow(i, columns, 1, blocks);
-		}
+	public void removePaddle(Paddle p) {
+		paddles.remove(p);
+		root.getChildren().remove(p.asNode());
 	}
 	
-	// generate default blocks with default column value
-	protected void generateBlocks(int rows) {
-		this.generateBlocks(rows, COLUMNS);
+	// add/remove Ball
+	public void addBall() {
+		Ball b = new Ball();
+		balls.add(b);
+		root.getChildren().add(b.getView());
 	}
 	
-	// add block objects by row to blocks array
-	protected void makeRow(int row, int length, int health, ArrayList<Block> blocks) {
-		int yCoord = TOP_PADDING + ((Block.SIZE_Y + BLOCK_PAD) * row);
+	public void removeBall(Ball b) {
+		balls.remove(b);
+		root.getChildren().remove(b.getView());
+	}
+	
+	// make row of block objects, where startX and startY are
+	// integer coordinates in a 9 by (variable Y) grid.
+	protected void makeRow(int startX, int startY, int length, ArrayList<Block> blocks, int health) {
+		if(length > (9 - startX)) { length = 9 - startX; }
+		int yCoord = TOP_PADDING + ((Block.SIZE_Y + BLOCK_PAD) * startY);
 		int xCoord;
-
+		
 		for(int i = 0; i < length; i++) {
 			xCoord = SIDE_PADDING + ((Block.SIZE_X + BLOCK_PAD) * i);
 			Block b = new Block(xCoord, yCoord, health);
@@ -61,8 +67,6 @@ public abstract class Level {
 			root.getChildren().add(b.asNode());
 		}
 	}
-	
-	// PUBLIC METHODS:
 	
 	// return root group
 	public Group getRoot() {
@@ -73,13 +77,6 @@ public abstract class Level {
 	public boolean isComplete() {
 		boolean allDestroyed = blocks.stream().allMatch(Block::isDestroyed);
 		return allDestroyed;
-	}
-	
-	// add a Ball object
-	public void addBall() {
-		Ball b = new Ball();
-		balls.add(b);
-		root.getChildren().add(b.getView());
 	}
 	
 	// update objects in level per frame
@@ -144,10 +141,6 @@ public abstract class Level {
         		}
         }
         return pointsPerStep;
-    }
-    
-    public void pauseLevel() {
-    	
     }
     
 //
