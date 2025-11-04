@@ -53,8 +53,15 @@ public abstract class Level {
 		root.getChildren().remove(b.getView());
 	}
 	
+	public boolean noBalls() {
+		if (balls.isEmpty()) {
+			return true;
+		}
+		else return false;
+	}
+	
 	// make row of block objects, where startX and startY are
-	// integer coordinates in a 9 by (variable Y) grid.
+	// integer coordinates in a 9 by (variable Y) grid; range (0-8), (0- ~20)
 	protected void makeRow(int startX, int startY, int length, ArrayList<Block> blocks, int health) {
 		if(length > (9 - startX)) { length = 9 - startX; }
 		int yCoord = TOP_PADDING + ((Block.SIZE_Y + BLOCK_PAD) * startY);
@@ -66,6 +73,15 @@ public abstract class Level {
 			blocks.add(b);
 			root.getChildren().add(b.asNode());
 		}
+	}
+	
+	// add an obstacle to a set grid coordinate
+	protected void makeObstacle(int posX, int posY) {
+		int yCoord = TOP_PADDING + ((Block.SIZE_Y + BLOCK_PAD) * posY);
+		int xCoord = SIDE_PADDING + ((Block.SIZE_X + BLOCK_PAD) * posX);
+		Obstacle o = new Obstacle(xCoord, yCoord);
+		obstacles.add(o);
+		root.getChildren().add(o.asNode());
 	}
 	
 	// return root group
@@ -109,6 +125,11 @@ public abstract class Level {
     				if(ball.getDy() == 0 && currentKey == KeyCode.SPACE) {
     					ball.launch();
     					}
+    				// in progress lives game logic
+//    		        if (ball.getView().getY() + 15 >= Game.SIZE_Y) {
+//    		        	removeBall(ball);
+//    		        }
+
     			}
     		}
     		
@@ -121,6 +142,7 @@ public abstract class Level {
             			b.onCollision(ball);
             			pointsPerStep += b.hit();
             		}
+            		// cheat key to destroy blocks quickly
             		if(currentKey == KeyCode.BACK_SLASH && !b.isDestroyed()) {
             			b.hit();
             		}
@@ -128,6 +150,16 @@ public abstract class Level {
         	}
         
         // obstacle collision
+        Iterator<Block> obstaclesIterator = obstacles.iterator();
+        while (obstaclesIterator.hasNext()) {
+        		Block b = obstaclesIterator.next();
+        		for(Ball ball : balls) {
+            		if (!b.isDestroyed() && b.checkCollision(ball)) {
+            			b.onCollision(ball);
+            		}
+        		}
+        }
+        
 	
         // powerup movement and collisions
         Iterator<PowerUp> powerupIterator = powerUps.iterator();

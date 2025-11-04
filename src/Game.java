@@ -55,13 +55,12 @@ public class Game extends Application {
     
     
     public void runGame() {
-
-    		levelScene = new Scene(currentLevel.getRoot(), SIZE_X, SIZE_Y, Color.BLACK);
-    		gameStage.setScene(levelScene);
-    		
-        // key handling per level scene
-    		levelScene.setOnKeyPressed(e -> currentKey = e.getCode());
-    		levelScene.setOnKeyReleased(e -> currentKey = null);
+    	levelScene = new Scene(currentLevel.getRoot(), SIZE_X, SIZE_Y, Color.BLACK);
+    	gameStage.setScene(levelScene);
+    	
+    	// key handling per level scene
+    	levelScene.setOnKeyPressed(e -> currentKey = e.getCode());
+    	levelScene.setOnKeyReleased(e -> currentKey = null);
     		
         // game loop
         animation = new Timeline(new KeyFrame(Duration.millis(MS_DELAY), e -> step()));
@@ -96,11 +95,18 @@ public class Game extends Application {
     			pause();
     			currentKey = null;
     		}
+    		if(currentLevel.noBalls()) {
+    			loseLife();
+    		}
     		stepScore = currentLevel.step(currentKey);
     		gameData.score += stepScore;
     		if(currentLevel.isComplete()) {
     				nextLevel();
     		}
+    }
+    
+    private void loseLife() {
+    	
     }
 //        paddle.move(currentKey);
 //
@@ -112,7 +118,6 @@ public class Game extends Application {
 //        ball.move();
 //
 //        // check bottom of screen
-//        if (ball.getView().getY() + 15 >= SIZE_Y) {
 //            lives--;
 //            if (lives <= 0) {
 //                gameOver();
