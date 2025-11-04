@@ -135,58 +135,7 @@ public class Game extends Application {
     	}
     	else { loseScreen(); }
     }
-//        paddle.move(currentKey);
-//
-//        // while paused after losing a life, freeze ball movement but keep paddle responsive
-//        if (waitingForRespawn) {
-//            return;
-//        }
-//
-//        ball.move();
-//
-//        // check bottom of screen
-//            lives--;
-//            if (lives <= 0) {
-//                gameOver();
-//                return;
-//            } else {
-//                resetBallWithDelay();
-//                return;
-//            }
-//        }
-//
-//        // paddle collision
-//        if (paddle.checkCollision(ball)) {
-//            paddle.onCollision(ball);
-//        }
-//
-//        // block collisions
-//        Iterator<Block> blockIterator = blocks.iterator();
-//        while (blockIterator.hasNext()) {
-//            Block b = blockIterator.next();
-//            if (!b.isDestroyed() && b.checkCollision(ball)) {
-//                b.onCollision(ball);
-//            }
-//        }
-//        
-//        // powerup movement and collisions
-//        Iterator<PowerUp> powerupIterator = powerups.iterator();
-//        while (powerupIterator.hasNext()) {
-//        	PowerUp p = powerupIterator.next();
-//        	
-//        	p.move();
-//        	
-//        	if (p.intersects(paddle.getView())) {
-//				p.activatePower();
-//			}
-//        }
-//
-//        // check win condition
-//        boolean allDestroyed = blocks.stream().allMatch(Block::isDestroyed);
-//        if (allDestroyed) {
-//            winScreen();
-//        }
-//    }
+
 //
 //    // MODIFIED RESET: adds 3-sec delay & lives text display
 //    private void resetBallWithDelay() {

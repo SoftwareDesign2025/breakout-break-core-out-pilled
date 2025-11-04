@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Iterator;
+
 /**
  * On paddle collision with this object, changes the size of the paddle for a duration
  * 
@@ -5,31 +8,33 @@
  */
 public class SizePowerUp extends PowerUp {
 	private static final double SIZE_INCREASE = 1.5;
-	private static final long DURATION = 15000;
 	
 	protected String powerName = "size";
-	private Paddle paddle;
+	private ArrayList<Paddle> paddles;
 
-	public SizePowerUp(int xCoord, int yCoord, Paddle paddle) {		
-		super(xCoord, yCoord);
+	public SizePowerUp(ArrayList<Paddle> paddles) {		
+		super();
         
-        this.paddle = paddle;
+        this.paddles = paddles;
 	}
 	
 	@Override
 	public void activatePower() {
 		super.activatePower();
 		
-		paddle.getView().setScaleX(paddle.getView().getScaleX() * SIZE_INCREASE);
-		
-		try {
-			Thread.sleep(DURATION);
-		} catch (InterruptedException e) {}
-		
-		deactivatePower();
+		modifyPaddles(SIZE_INCREASE);
 	}
 	
-	private void deactivatePower() {
-		paddle.getView().setScaleX(paddle.getView().getScaleX() / SIZE_INCREASE);
+	@Override
+	protected void deactivatePower() {
+		modifyPaddles(1/SIZE_INCREASE);
+	}
+	
+	private void modifyPaddles(double scalar) {
+		Iterator<Paddle> paddleIterator = paddles.iterator();
+		while (paddleIterator.hasNext()) {
+			Paddle paddle = paddleIterator.next();
+			paddle.getView().setScaleX(paddle.getView().getScaleX() * scalar);
+		}
 	}
 }
