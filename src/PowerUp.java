@@ -37,10 +37,11 @@ public abstract class PowerUp {
 	}
 	
 	public void setLocation(double xCoord, double yCoord) {
-		myView.setX(xCoord);
+		// Math here designed to centralize the powerup in the block
+		myView.setX(xCoord + (Block.SIZE_X - SIZE) / 2);
         myView.setY(yCoord);
 	}
-	
+	 	
 	public void drop() {
 		myVelocity = MOVING_VELOCITY;
 	}
