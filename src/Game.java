@@ -25,18 +25,22 @@ public class Game extends Application {
     private Stage gameStage; // new window
     private Timeline animation;
     private KeyCode currentKey = null;
-    private Level currentLevel;
     
-    protected int lives = 3; // default 3 lives
-    protected int score = 0; // default score starts at 0
+    protected GameData gameData = new GameData();
+    protected Menu menu;
+    protected int stepScore = 0;
     protected ArrayList<Level> levels = getLevels(); // list of levels
+    private Level currentLevel = levels.get(gameData.level);
+    protected Scene levelScene;
+
+
     
     // brings up start menu, waits for New Game button press
     @Override
     public void start(Stage primaryStage) {
         gameStage = new Stage();
-        StartMenu startMenu = new StartMenu(SIZE_X, SIZE_Y, this);
-        gameStage.setScene(startMenu.getScene());
+        menu = new Menu(SIZE_X, SIZE_Y, this);
+        gameStage.setScene(menu.getScene());
         gameStage.show();
     }
     
@@ -51,14 +55,12 @@ public class Game extends Application {
     
     
     public void runGame() {
-    		this.currentLevel = levels.get(0);
-    		
-    		Scene levelScene = new Scene(currentLevel.getRoot(), SIZE_X, SIZE_Y, Color.BLACK);
-    		gameStage.setScene(levelScene);
-    		
-        // key handling per level scene
-    		levelScene.setOnKeyPressed(e -> currentKey = e.getCode());
-    		levelScene.setOnKeyReleased(e -> currentKey = null);
+    	levelScene = new Scene(currentLevel.getRoot(), SIZE_X, SIZE_Y, Color.BLACK);
+    	gameStage.setScene(levelScene);
+    	
+    	// key handling per level scene
+    	levelScene.setOnKeyPressed(e -> currentKey = e.getCode());
+    	levelScene.setOnKeyReleased(e -> currentKey = null);
     		
         // game loop
         animation = new Timeline(new KeyFrame(Duration.millis(MS_DELAY), e -> step()));
@@ -66,8 +68,45 @@ public class Game extends Application {
         animation.play();
     }
     
+    public void pause() {
+    		animation.pause();
+    		gameStage.setScene(menu.getScene());
+    }
+    
+    public void resume() {
+    		gameStage.setScene(levelScene);
+    		animation.play();
+    }
+    
+    private void nextLevel() {
+    		animation.pause();
+    		gameData.level += 1;
+    		try {
+    			this.currentLevel = levels.get(gameData.level);
+    			runGame();
+    		}
+			catch(IndexOutOfBoundsException e) {
+				System.out.println("No more levels"); 
+			}
+    }
+    
     public void step() {
-    		currentLevel.step(currentKey);
+    		if(currentKey == KeyCode.ESCAPE) {
+    			pause();
+    			currentKey = null;
+    		}
+    		if(currentLevel.noBalls()) {
+    			loseLife();
+    		}
+    		stepScore = currentLevel.step(currentKey);
+    		gameData.score += stepScore;
+    		if(currentLevel.isComplete()) {
+    				nextLevel();
+    		}
+    }
+    
+    private void loseLife() {
+    	
     }
 //        paddle.move(currentKey);
 //
@@ -79,7 +118,6 @@ public class Game extends Application {
 //        ball.move();
 //
 //        // check bottom of screen
-//        if (ball.getView().getY() + 15 >= SIZE_Y) {
 //            lives--;
 //            if (lives <= 0) {
 //                gameOver();

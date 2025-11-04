@@ -16,47 +16,57 @@ public abstract class Level {
 	
 	protected Group root = new Group();
 	
-	protected int points = 0;
-	protected int livesLost = 0;
+	protected int pointsPerStep = 0;
 	
 	// level variables; // default values
 	protected int TOP_PADDING = 30; // 30
 	protected int SIDE_PADDING = 36; // 36
 	protected int COLUMNS = 9; // 9
 	protected int BLOCK_PAD = 6; // 6
-	protected boolean levelComplete = false; // false
 	
 	// set per level:
 	protected int ROWS;
 	
 	// PROTECTED METHODS:
 	
-	// add Paddle
-	protected void addPaddle() {
+	// add/remove Paddle
+	public void addPaddle() {
 		Paddle p = new Paddle();
 		paddles.add(p);
 		root.getChildren().add(p.asNode());
 	}
 	
-	// generate default blocks in rows and columns
-	protected void generateBlocks(int rows, int columns) {
-		// Row generation
-		for(int i = 0; i < rows; i++) {
-			makeRow(i, columns, blocks);
+	public void removePaddle(Paddle p) {
+		paddles.remove(p);
+		root.getChildren().remove(p.asNode());
+	}
+	
+	// add/remove Ball
+	public void addBall() {
+		Ball b = new Ball();
+		balls.add(b);
+		root.getChildren().add(b.getView());
+	}
+	
+	public void removeBall(Ball b) {
+		balls.remove(b);
+		root.getChildren().remove(b.getView());
+	}
+	
+	public boolean noBalls() {
+		if (balls.isEmpty()) {
+			return true;
 		}
+		else return false;
 	}
 	
-	// generate default blocks with default column value
-	protected void generateBlocks(int rows) {
-		this.generateBlocks(rows, COLUMNS);
-	}
-	
-	// add block objects by row to blocks array
-	protected void makeRow(int row, int length, ArrayList<Block> blocks) {
-		int yCoord = TOP_PADDING + ((Block.SIZE_Y + BLOCK_PAD) * row);
+	// make row of block objects, where startX and startY are
+	// integer coordinates in a 9 by (variable Y) grid; range (0-8), (0- ~20)
+	protected void makeRow(int startX, int startY, int length, ArrayList<Block> blocks, int health) {
+		if(length > (9 - startX)) { length = 9 - startX; }
+		int yCoord = TOP_PADDING + ((Block.SIZE_Y + BLOCK_PAD) * startY);
 		int xCoord;
-		int health = 1;
-
+		
 		for(int i = 0; i < length; i++) {
 			xCoord = SIDE_PADDING + ((Block.SIZE_X + BLOCK_PAD) * i);
 			Block b = new Block(xCoord, yCoord, health);
@@ -65,7 +75,14 @@ public abstract class Level {
 		}
 	}
 	
-	// PUBLIC METHODS:
+	// add an obstacle to a set grid coordinate
+	protected void makeObstacle(int posX, int posY) {
+		int yCoord = TOP_PADDING + ((Block.SIZE_Y + BLOCK_PAD) * posY);
+		int xCoord = SIDE_PADDING + ((Block.SIZE_X + BLOCK_PAD) * posX);
+		Obstacle o = new Obstacle(xCoord, yCoord);
+		obstacles.add(o);
+		root.getChildren().add(o.asNode());
+	}
 	
 	// return root group
 	public Group getRoot() {
@@ -74,18 +91,14 @@ public abstract class Level {
 	
 	// check for level completed
 	public boolean isComplete() {
-		return levelComplete;
-	}
-	
-	// add a Ball object
-	public void addBall() {
-		Ball b = new Ball();
-		balls.add(b);
-		root.getChildren().add(b.getView());
+		boolean allDestroyed = blocks.stream().allMatch(Block::isDestroyed);
+		return allDestroyed;
 	}
 	
 	// update objects in level per frame
-    public void step(KeyCode currentKey) {
+    public int step(KeyCode currentKey) {
+    		
+    		pointsPerStep = 0;
     		
     		// move paddle(s), check collision
     		if(paddles.isEmpty()) {
@@ -112,6 +125,11 @@ public abstract class Level {
     				if(ball.getDy() == 0 && currentKey == KeyCode.SPACE) {
     					ball.launch();
     					}
+    				// in progress lives game logic
+//    		        if (ball.getView().getY() + 15 >= Game.SIZE_Y) {
+//    		        	removeBall(ball);
+//    		        }
+
     			}
     		}
     		
@@ -122,12 +140,26 @@ public abstract class Level {
         		for(Ball ball : balls) {
             		if (!b.isDestroyed() && b.checkCollision(ball)) {
             			b.onCollision(ball);
-            			points += b.hit();
+            			pointsPerStep += b.hit();
+            		}
+            		// cheat key to destroy blocks quickly
+            		if(currentKey == KeyCode.BACK_SLASH && !b.isDestroyed()) {
+            			b.hit();
             		}
         		}
         	}
         
         // obstacle collision
+        Iterator<Block> obstaclesIterator = obstacles.iterator();
+        while (obstaclesIterator.hasNext()) {
+        		Block b = obstaclesIterator.next();
+        		for(Ball ball : balls) {
+            		if (!b.isDestroyed() && b.checkCollision(ball)) {
+            			b.onCollision(ball);
+            		}
+        		}
+        }
+        
 	
         // powerup movement and collisions
         Iterator<PowerUp> powerupIterator = powerUps.iterator();
@@ -140,7 +172,7 @@ public abstract class Level {
         			}
         		}
         }
-    
+        return pointsPerStep;
     }
     
 //
