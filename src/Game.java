@@ -135,9 +135,9 @@ public class Game extends Application {
     }
 
     private void gameOver(boolean gameWon) {
-        if (gameWon) winScreen();
-        else loseScreen();
-    }
+    		if(gameWon) { winScreen(); }
+    		else { loseScreen(); }
+    	}
 
     private void loseScreen() {
         showEndScreen("GAME OVER");
