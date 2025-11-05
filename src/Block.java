@@ -1,4 +1,4 @@
-	import java.io.FileInputStream;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import javafx.geometry.Bounds;
@@ -52,7 +52,6 @@ public class Block implements Collidable {
     
     public void setPowerup(PowerUp powerup) {
     	myPower = powerup;
-    	myPower.setLocation(myView.getX(), myView.getY());
     }
 
     // show block in scene
