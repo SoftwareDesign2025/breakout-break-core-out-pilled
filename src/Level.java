@@ -175,6 +175,8 @@ public abstract class Level {
         return pointsPerStep;
     }
     
+    
+    
 //
 //        // while paused after losing a life, freeze ball movement but keep paddle responsive
 //        if (waitingForRespawn) {
