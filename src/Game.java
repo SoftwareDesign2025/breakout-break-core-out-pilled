@@ -1,12 +1,18 @@
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
 import java.util.ArrayList;
+import javafx.scene.control.Button;
+
 
 public class Game extends Application {
 	
@@ -31,6 +37,9 @@ public class Game extends Application {
     protected int stepScore = 0;
     protected ArrayList<Level> levels = getLevels(); // list of levels
     private Level currentLevel = levels.get(gameData.level);
+    
+    
+    protected Scene gameScene;
     protected Scene levelScene;
 
 
@@ -42,6 +51,12 @@ public class Game extends Application {
         menu = new Menu(SIZE_X, SIZE_Y, this);
         gameStage.setScene(menu.getScene());
         gameStage.show();
+        
+        KeyFrame frame = new KeyFrame(Duration.millis(MS_DELAY), e -> step(MS_DELAY));
+        Timeline animation = new Timeline();
+        animation.setCycleCount(Timeline.INDEFINITE);
+        animation.getKeyFrames().add(frame);
+        animation.play();
     }
     
     // Add any new level subclasses here to be included in the game
@@ -56,6 +71,8 @@ public class Game extends Application {
     
     public void runGame() {
     	levelScene = new Scene(currentLevel.getRoot(), SIZE_X, SIZE_Y, Color.BLACK);
+    	
+    	
     	gameStage.setScene(levelScene);
     	
     	// key handling per level scene
@@ -63,7 +80,7 @@ public class Game extends Application {
     	levelScene.setOnKeyReleased(e -> currentKey = null);
     		
         // game loop
-        animation = new Timeline(new KeyFrame(Duration.millis(MS_DELAY), e -> step()));
+        animation = new Timeline(new KeyFrame(Duration.millis(MS_DELAY), e -> step(MS_DELAY)));
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.play();
     }
@@ -87,10 +104,11 @@ public class Game extends Application {
     		}
 			catch(IndexOutOfBoundsException e) {
 				System.out.println("No more levels"); 
+				gameOver(true);
 			}
     }
     
-    public void step() {
+    public void step(double elapsedTime) {
     		if(currentKey == KeyCode.ESCAPE) {
     			pause();
     			currentKey = null;
@@ -98,68 +116,32 @@ public class Game extends Application {
     		if(currentLevel.noBalls()) {
     			loseLife();
     		}
-    		stepScore = currentLevel.step(currentKey);
-    		gameData.score += stepScore;
+    		else {
+    			stepScore = currentLevel.step(currentKey, elapsedTime);
+    			gameData.score += stepScore;
+    		}
     		if(currentLevel.isComplete()) {
     				nextLevel();
     		}
     }
     
     private void loseLife() {
-    	
+    	gameData.lives -= 1;
+    	if(gameData.lives <= 0) {
+    		gameOver(false);
+    	}
+    	else {
+    		currentLevel.addBall();
+    	}
     }
-//        paddle.move(currentKey);
-//
-//        // while paused after losing a life, freeze ball movement but keep paddle responsive
-//        if (waitingForRespawn) {
-//            return;
-//        }
-//
-//        ball.move();
-//
-//        // check bottom of screen
-//            lives--;
-//            if (lives <= 0) {
-//                gameOver();
-//                return;
-//            } else {
-//                resetBallWithDelay();
-//                return;
-//            }
-//        }
-//
-//        // paddle collision
-//        if (paddle.checkCollision(ball)) {
-//            paddle.onCollision(ball);
-//        }
-//
-//        // block collisions
-//        Iterator<Block> blockIterator = blocks.iterator();
-//        while (blockIterator.hasNext()) {
-//            Block b = blockIterator.next();
-//            if (!b.isDestroyed() && b.checkCollision(ball)) {
-//                b.onCollision(ball);
-//            }
-//        }
-//        
-//        // powerup movement and collisions
-//        Iterator<PowerUp> powerupIterator = powerups.iterator();
-//        while (powerupIterator.hasNext()) {
-//        	PowerUp p = powerupIterator.next();
-//        	
-//        	p.move();
-//        	
-//        	if (p.intersects(paddle.getView())) {
-//				p.activatePower();
-//			}
-//        }
-//
-//        // check win condition
-//        boolean allDestroyed = blocks.stream().allMatch(Block::isDestroyed);
-//        if (allDestroyed) {
-//            winScreen();
-//        }
-//    }
+    
+    private void gameOver(boolean gameWon) {
+    	if(gameWon) {
+    		winScreen();
+    	}
+    	else { loseScreen(); }
+    }
+
 //
 //    // MODIFIED RESET: adds 3-sec delay & lives text display
 //    private void resetBallWithDelay() {
@@ -191,32 +173,31 @@ public class Game extends Application {
 //        delay.play();
 //    }
 //
-//    private void gameOver() {
-//        animation.stop();
-//        showEndScreen("GAME OVER");
-//    }
-//
-//    private void winScreen() {
-//        animation.stop();
-//        showEndScreen("YOU WIN!");
-//    }
-//
-//    private void showEndScreen(String message) {
-//        Group root = new Group();
-//        Scene scene = new Scene(root, SIZE_X, SIZE_Y, Color.BLACK);
-//
-//        Text text = new Text(message);
-//        text.setFont(new Font(40));
-//        text.setFill(Color.WHITE);
-//        text.setX(80);
-//        text.setY(200);
-//
-//        Button restartButton = new Button("RESTART");
-//        restartButton.setLayoutX(SIZE_X / 2 - 40);
-//        restartButton.setLayoutY(300);
-//        restartButton.setOnAction(e -> runGame());
-//
-//        root.getChildren().addAll(text, restartButton);
-////        gameStage.setScene(scene);
-//    }
+    private void loseScreen() {
+        animation.stop();
+        showEndScreen("GAME OVER");
+    }
+    private void winScreen() {
+        animation.stop();
+        showEndScreen("YOU WIN!");
+    }
+
+    private void showEndScreen(String message) {
+        Group root = new Group();
+        Scene scene = new Scene(root, SIZE_X, SIZE_Y, Color.BLACK);
+
+        Text text = new Text(message);
+        text.setFont(new Font(40));
+        text.setFill(Color.WHITE);
+        text.setX(80);
+        text.setY(200);
+
+        Button restartButton = new Button("RESTART");
+        restartButton.setLayoutX(SIZE_X / 2 - 40);
+        restartButton.setLayoutY(300);
+//        restartButton.setOnAction(e -> { this.runGame(); });
+
+        root.getChildren().addAll(text, restartButton);
+        gameStage.setScene(scene);
+    }
 }
