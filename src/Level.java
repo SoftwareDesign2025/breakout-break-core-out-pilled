@@ -96,7 +96,7 @@ public abstract class Level {
 	}
 	
 	// update objects in level per frame
-    public int step(KeyCode currentKey) {
+    public int step(KeyCode currentKey, double elapsedTime) {
     		
     		pointsPerStep = 0;
     		

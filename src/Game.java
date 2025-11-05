@@ -51,6 +51,12 @@ public class Game extends Application {
         menu = new Menu(SIZE_X, SIZE_Y, this);
         gameStage.setScene(menu.getScene());
         gameStage.show();
+        
+        KeyFrame frame = new KeyFrame(Duration.millis(MS_DELAY), e -> step(MS_DELAY));
+        Timeline animation = new Timeline();
+        animation.setCycleCount(Timeline.INDEFINITE);
+        animation.getKeyFrames().add(frame);
+        animation.play();
     }
     
     // Add any new level subclasses here to be included in the game
@@ -74,7 +80,7 @@ public class Game extends Application {
     	levelScene.setOnKeyReleased(e -> currentKey = null);
     		
         // game loop
-        animation = new Timeline(new KeyFrame(Duration.millis(MS_DELAY), e -> step()));
+        animation = new Timeline(new KeyFrame(Duration.millis(MS_DELAY), e -> step(MS_DELAY)));
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.play();
     }
@@ -102,7 +108,7 @@ public class Game extends Application {
 			}
     }
     
-    public void step() {
+    public void step(double elapsedTime) {
     		if(currentKey == KeyCode.ESCAPE) {
     			pause();
     			currentKey = null;
