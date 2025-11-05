@@ -2,17 +2,17 @@ import javafx.scene.image.ImageView;
 
 public class Enemy extends Block {
 
-    private static final double SPEED_X = 2; // horizontal movement speed
-    private static final double SPEED_Y = 20; // vertical drop per row
+    private static final double SPEED_X = 100; // horizontal movement speed
+    private static final double SPEED_Y = 100; // vertical drop per row
     private boolean movingRight = true;
 
     public Enemy(int xCoord, int yCoord, int health) {
         super(xCoord, yCoord, health);
     }
 
-    public void move() {
+    public void move(double elapsedTime) {
         ImageView view = (ImageView) getView();
-        double newX = view.getX() + (movingRight ? SPEED_X : -SPEED_X);
+        double newX = view.getX() + (movingRight ? SPEED_X : -SPEED_X) * elapsedTime / 1000;
 
         if (newX <= 0) {
             movingRight = true;

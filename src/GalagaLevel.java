@@ -33,12 +33,12 @@ public class GalagaLevel extends Level {
     }
 
     @Override
-    public int step(KeyCode currentKey) {
+    public int step(KeyCode currentKey, double elapsedTime) {
         pointsPerStep = 0;
 
         // 1️⃣ Move player and shoot bullets
         if (player != null) {
-            player.move(currentKey);
+            player.move(currentKey, elapsedTime);
             if (currentKey == KeyCode.SPACE) {
                 player.shoot(); // adds bullet to player's internal list
             }
@@ -56,7 +56,7 @@ public class GalagaLevel extends Level {
         Iterator<Bullet> bulletIter = bullets.iterator();
         while (bulletIter.hasNext()) {
             Bullet b = bulletIter.next();
-            b.move();
+            b.move(elapsedTime);
             if (b.getView().getY() + b.getView().getFitHeight() < 0) {
                 root.getChildren().remove(b.getView());
                 bulletIter.remove();
@@ -67,7 +67,7 @@ public class GalagaLevel extends Level {
         enemyMoveCounter++;
         if (enemyMoveCounter >= 6) { // move every 6 frames (~10 times/sec at 60fps)
             for (Enemy e : enemies) {
-                e.move();
+                e.move(elapsedTime);
             }
             enemyMoveCounter = 0;
         }
