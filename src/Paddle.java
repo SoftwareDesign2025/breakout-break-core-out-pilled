@@ -13,20 +13,19 @@ import java.util.Random;
 public class Paddle implements Collidable {
     public static int PADDLE_WIDTH = 92;
     public static int PADDLE_HEIGHT = 12;
-    public static final int PADDLE_VELOCITY = 7;
+    public static final int PADDLE_VELOCITY = 200;
     public static final String PADDLE_IMAGE = "resources/Paddle.png";
     public static final int MIN_RANDOMIZING = -5;
     public static final int MAX_RANDOMIZING = 5;
     private ImageView myView;
     private double xCoordinate;
-    private double yCoordinate;
     
     // default screen bounds in case Game doesn't call a bounds-check method
     private static final double DEFAULT_SCREEN_WIDTH = 480;
     private static final double DEFAULT_SCREEN_HEIGHT = 640;
     
     // default paddle dimensions for default ball position
-    private static final double PADDLE_PADDING = 30;
+    public static final double PADDLE_PADDING = 30;
     private static final double DEFAULT_POS_X = (DEFAULT_SCREEN_WIDTH / 2) - (PADDLE_WIDTH / 2);
 	private static final double DEFAULT_POS_Y = (DEFAULT_SCREEN_HEIGHT - (PADDLE_HEIGHT + PADDLE_PADDING));
 
@@ -69,11 +68,11 @@ public class Paddle implements Collidable {
      * inputs: a KeyCode which represents a key on the keyboard the player presses
      * outputs: moves the paddle object
      * */
-    public void move(KeyCode code) {
+    public void move(KeyCode code, double elapsedTime) {
         if (code == KeyCode.LEFT) {
-            xCoordinate -= PADDLE_VELOCITY;
+            xCoordinate -= PADDLE_VELOCITY * elapsedTime / 1000;
         } else if (code == KeyCode.RIGHT) {
-            xCoordinate += PADDLE_VELOCITY;
+            xCoordinate += PADDLE_VELOCITY * elapsedTime / 1000;
         }
         // make sure paddle doesn't go off screen
         if (xCoordinate < 0) xCoordinate = 0;
