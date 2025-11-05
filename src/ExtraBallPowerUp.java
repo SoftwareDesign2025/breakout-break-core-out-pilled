@@ -9,25 +9,11 @@ import javafx.scene.Group;
  */
 public class ExtraBallPowerUp extends PowerUp {
 	protected String powerName = "extraBall";
-	private ArrayList<Ball> balls;
-	private Group parent;
 	
-	public ExtraBallPowerUp(Group root, ArrayList<Ball> balls) {
-		super();
-		
-		this.balls = balls;
-		this.parent = root;
+
+	public ExtraBallPowerUp(int xCoord, int yCoord) {
+		super(xCoord, yCoord);
 	}
 
-	@Override
-	public void activatePower() {
-		super.activatePower();
-		
-		Ball extraBall = new Ball();
-		balls.add(extraBall);
-		parent.getChildren().add(extraBall.getView());
-	}
-
-	@Override
-	protected void deactivatePower() {}
+	
 }
