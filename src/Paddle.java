@@ -13,7 +13,7 @@ import java.util.Random;
 public class Paddle implements Collidable {
     public static int PADDLE_WIDTH = 92;
     public static int PADDLE_HEIGHT = 12;
-    public static final int PADDLE_VELOCITY = 200;
+    public static final int PADDLE_VELOCITY = 500;
     public static final String PADDLE_IMAGE = "resources/Paddle.png";
     public static final int MIN_RANDOMIZING = -5;
     public static final int MAX_RANDOMIZING = 5;

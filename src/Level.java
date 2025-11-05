@@ -126,9 +126,9 @@ public abstract class Level {
     					ball.launch();
     					}
     				// in progress lives game logic
-//    		        if (ball.getView().getY() + 15 >= Game.SIZE_Y) {
-//    		        	removeBall(ball);
-//    		        }
+    		        if (ball.getView().getY() + 15 >= Game.SIZE_Y) {
+    		        	removeBall(ball);
+    		        }
 
     			}
     		}
