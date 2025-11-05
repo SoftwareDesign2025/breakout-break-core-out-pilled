@@ -127,21 +127,19 @@ public class Game extends Application {
     }
     
     private void loseLife() {
-    	gameData.lives -= 1;
-    	if(gameData.lives <= 0) {
-    		gameOver(false);
-    	}
-    	else {
-    		currentLevel.addBall();
-    	}
+    		gameData.lives -= 1;
+    		if(gameData.lives <= 0) {
+    			gameOver(false);
+    		}
+    		else {
+    			currentLevel.addBall();
+    		}
     }
     
     private void gameOver(boolean gameWon) {
-    	if(gameWon) {
-    		winScreen();
+    		if(gameWon) { winScreen(); }
+    		else { loseScreen(); }
     	}
-    	else { loseScreen(); }
-    }
 
 //
 //    // MODIFIED RESET: adds 3-sec delay & lives text display
@@ -175,11 +173,9 @@ public class Game extends Application {
 //    }
 //
     private void loseScreen() {
-        animation.stop();
         showEndScreen("GAME OVER");
     }
     private void winScreen() {
-        animation.stop();
         showEndScreen("YOU WIN!");
     }
 
@@ -200,5 +196,6 @@ public class Game extends Application {
 
         root.getChildren().addAll(text, restartButton);
         gameStage.setScene(scene);
+        animation.stop();
     }
 }
