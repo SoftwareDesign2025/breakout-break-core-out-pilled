@@ -96,42 +96,37 @@ public abstract class Level {
 	}
 	
 	// update objects in level per frame
-    public int step(KeyCode currentKey) {
+    public int step(KeyCode currentKey, double elapsedTime) {
     		
     		pointsPerStep = 0;
     		
     		// move paddle(s), check collision
-    		if(paddles.isEmpty()) {
-    			System.out.println("No paddles found in level");
+    		Iterator<Paddle> paddleIterator = paddles.iterator();
+    		while(paddleIterator.hasNext() ) {
+    			Paddle paddle = paddleIterator.next();
+				paddle.move(currentKey, elapsedTime);
+				for(Ball ball : balls) {
+					if(paddle.checkCollision(ball)) {
+						paddle.onCollision(ball);
+					}
+				}
     		}
-    		else {
-    			for(Paddle paddle : paddles) {
-    				paddle.move(currentKey);
-    				for(Ball ball : balls) {
-    					if(paddle.checkCollision(ball)) {
-    						paddle.onCollision(ball);
-    					}
-    				}
-    			}
-    		}
+
     
     		// move ball(s), check bounds
-    		if(balls.isEmpty()) {
-    			System.out.println("No balls found in level");
+    		Iterator<Ball> ballIterator = balls.iterator();
+    		while(ballIterator.hasNext()) {
+    			Ball ball = ballIterator.next();
+    			ball.move(elapsedTime);
+				if(ball.getDy() == 0 && currentKey == KeyCode.SPACE) {
+					ball.launch();
+					}
+				// in progress lives game logic
+		        if (ball.getView().getY() + 15 >= Game.SIZE_Y) {
+		        	removeBall(ball);
+		        }
     		}
-    		else {
-    			for(Ball ball : balls) {
-    				ball.move();
-    				if(ball.getDy() == 0 && currentKey == KeyCode.SPACE) {
-    					ball.launch();
-    					}
-    				// in progress lives game logic
-//    		        if (ball.getView().getY() + 15 >= Game.SIZE_Y) {
-//    		        	removeBall(ball);
-//    		        }
 
-    			}
-    		}
     		
         // block collisions
         Iterator<Block> blockIterator = blocks.iterator();
@@ -165,7 +160,7 @@ public abstract class Level {
         Iterator<PowerUp> powerupIterator = powerUps.iterator();
         while (powerupIterator.hasNext()) {
         		PowerUp p = powerupIterator.next();
-        		p.move();
+        		p.move(elapsedTime);
         		for(Paddle paddle : paddles) {
         			if (p.intersects(paddle.getView())) {
         				p.activatePower();
@@ -174,40 +169,4 @@ public abstract class Level {
         }
         return pointsPerStep;
     }
-    
-    
-    
-//
-//        // while paused after losing a life, freeze ball movement but keep paddle responsive
-//        if (waitingForRespawn) {
-//            return;
-//        }
-//
-//        for(Ball ball : balls) {
-//        		ball.move();
-//        		if(ball.getView().getY() + 15 >= SIZE_Y) {
-//                    lives--;
-//                    if (lives <= 0) {
-//                        gameOver();
-//                        return;
-//                    } else {
-//                        resetBallWithDelay();
-//                        return;
-//                    }
-//                }
-//        }
-//
-
-//
-
-//        
-
-//
-//        // check win condition
-//        boolean allDestroyed = blocks.stream().allMatch(Block::isDestroyed);
-//        if (allDestroyed) {
-//            winScreen();
-//        }
-
-
-}
+} 

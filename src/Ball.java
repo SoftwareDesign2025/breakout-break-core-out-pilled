@@ -15,18 +15,12 @@ public class Ball implements Collidable {
     private static final String BALL_IMAGE = "resources/ball.gif";
     private static final int BALL_SIZE = 15;
     private static final int ANGLE_RANGE = 60;
-    private static final int BALL_LAUNCH_SPEED = 6;
-    
-    // default screen bounds in case Game doesn't call a bounds-check method
-    private static final double DEFAULT_SCREEN_WIDTH = 480;
-    private static final double DEFAULT_SCREEN_HEIGHT = 640;
+    private static final int BALL_LAUNCH_SPEED = 200;
     
     // default paddle dimensions for default ball position
-    private static final double PADDLE_HEIGHT = 12;
-    private static final double PADDLE_WIDTH = 92;
-    private static final double PADDLE_PADDING = 30;
-    private static final double DEFAULT_POS_X = (DEFAULT_SCREEN_WIDTH / 2) - (BALL_SIZE / 2);
-	private static final double DEFAULT_POS_Y = (DEFAULT_SCREEN_HEIGHT - (PADDLE_HEIGHT + PADDLE_PADDING + BALL_SIZE + 2));
+    private static final double DEFAULT_POS_X = (Game.SIZE_X / 2) - (BALL_SIZE / 2);
+	private static final double DEFAULT_POS_Y = (Game.SIZE_Y - 
+			(Paddle.PADDLE_HEIGHT + Paddle.PADDLE_PADDING + BALL_SIZE + 2));
 	
 
     private ImageView myView;
@@ -76,17 +70,11 @@ public class Ball implements Collidable {
     // move the ball by its velocity (very simple, no elapsed time)
     // Game can call this every frame
     // updated move so it moves in smaller chunks to avoid skipping collisions
-    public void move() {
-        int steps = (int) Math.ceil(Math.max(Math.abs(dx), Math.abs(dy))); 
-        double stepX = dx / steps;
-        double stepY = dy / steps;
-
-        for (int i = 0; i < steps; i++) {
-            myView.setX(myView.getX() + stepX);
-            myView.setY(myView.getY() + stepY);
-        }
+    public void move(double elapsedTime) {
+        myView.setX(myView.getX() + dx * elapsedTime / 1000);
+        myView.setY(myView.getY() + dy * elapsedTime / 1000);
         // keep it from leaving the screen using defaults (Game can do nicer checks)
-        checkBounds((int) DEFAULT_SCREEN_WIDTH, (int) DEFAULT_SCREEN_HEIGHT);
+        checkBounds((int) Game.SIZE_X, (int) Game.SIZE_Y);
     }
     
     // check and bounce on screen edges (Game can call this with real window size)
