@@ -145,4 +145,19 @@ public class Ball implements Collidable {
     public void onCollision(Ball other) {
         reverseY();
     }
+    
+ // Adjust velocity based on a new angle (keeps current speed magnitude)
+    public void setVelocityFromAngle(double angleRad) {
+        double speed = Math.sqrt(dx*dx + dy*dy); // current speed
+        dx = speed * Math.cos(angleRad);
+        dy = -Math.abs(speed * Math.sin(angleRad)); // ensure it goes upward
+    }
+
+    
+ // makes the ball bounce upward off the paddle while keeping same left/right direction
+    public void bounceOffPaddle() {
+        // flip vertical direction only
+        dy = -Math.abs(dy);
+    }
+
 }
