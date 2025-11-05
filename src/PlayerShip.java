@@ -48,8 +48,8 @@ public class PlayerShip extends Paddle {
 
     /** Horizontal movement stays the same as Paddle */
     @Override
-    public void move(KeyCode code) {
-        super.move(code); // just reuse Paddle movement
+    public void move(KeyCode code, double elapsedTime) {
+        super.move(code, elapsedTime); // just reuse Paddle movement
     }
     
     

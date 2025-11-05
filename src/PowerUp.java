@@ -12,7 +12,7 @@ import javafx.scene.image.ImageView;
  * @author Caelan Duncan
  */
 public abstract class PowerUp {
-	protected static final int MOVING_VELOCITY = 80;
+	protected static final int MOVING_VELOCITY = 200;
 	protected static final int SIZE = 12;
 	protected static final String POWER_IMAGE = "resources/%spower.gif";
 	
@@ -39,8 +39,8 @@ public abstract class PowerUp {
 		myVelocity = MOVING_VELOCITY;
 	}
 	
-	public void move() {
-		myView.setY(myView.getY() + myVelocity);
+	public void move(double elapsedTime) {
+		myView.setY(myView.getY() + myVelocity * elapsedTime / 1000);
 	}
 	
 	public Node getView() {

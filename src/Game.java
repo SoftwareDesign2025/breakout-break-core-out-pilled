@@ -108,13 +108,13 @@ public class Game extends Application {
         }
 
         if (isGalagaMode) {
-            stepScore = currentLevel.step(currentKey);
+            stepScore = currentLevel.step(currentKey, elapsedTime);
             gameData.score += stepScore;
         } else {
             if (currentLevel.noBalls()) {
                 loseLife();
             } else {
-                stepScore = currentLevel.step(currentKey);
+                stepScore = currentLevel.step(currentKey, elapsedTime);
                 currentKey = null;
                 gameData.score += stepScore;
             }
