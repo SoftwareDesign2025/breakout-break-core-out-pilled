@@ -96,7 +96,7 @@ public abstract class Level {
 	}
 	
 	// update objects in level per frame
-    public int step(KeyCode currentKey) {
+    public int step(KeyCode currentKey, double elapsedTime) {
     		
     		pointsPerStep = 0;
     		
@@ -104,7 +104,7 @@ public abstract class Level {
     		Iterator<Paddle> paddleIterator = paddles.iterator();
     		while(paddleIterator.hasNext() ) {
     			Paddle paddle = paddleIterator.next();
-				paddle.move(currentKey);
+				paddle.move(currentKey, elapsedTime);
 				for(Ball ball : balls) {
 					if(paddle.checkCollision(ball)) {
 						paddle.onCollision(ball);
@@ -117,7 +117,7 @@ public abstract class Level {
     		Iterator<Ball> ballIterator = balls.iterator();
     		while(ballIterator.hasNext()) {
     			Ball ball = ballIterator.next();
-    			ball.move();
+    			ball.move(elapsedTime);
 				if(ball.getDy() == 0 && currentKey == KeyCode.SPACE) {
 					ball.launch();
 					}
@@ -160,7 +160,7 @@ public abstract class Level {
         Iterator<PowerUp> powerupIterator = powerUps.iterator();
         while (powerupIterator.hasNext()) {
         		PowerUp p = powerupIterator.next();
-        		p.move();
+        		p.move(elapsedTime);
         		for(Paddle paddle : paddles) {
         			if (p.intersects(paddle.getView())) {
         				p.activatePower();
