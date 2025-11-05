@@ -175,6 +175,11 @@ public abstract class Level {
         return pointsPerStep;
     }
     
+    public boolean isGalaga() {
+        return false; // default: not a Galaga level
+    }
+
+    
     
     
 //
