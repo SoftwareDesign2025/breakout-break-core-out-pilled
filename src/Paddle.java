@@ -88,14 +88,21 @@ public class Paddle implements Collidable {
 
     @Override
     public void onCollision(Ball ball) {
-        // just make ball bounce up and have a 50/50 chance of changing direction
-        ball.reverseY();
-        
-        double angle = Math.atan(ball.getDy() / ball.getDx());
-        double angleModifier = (Math.random() * .087) - .04;
-        
-        ball.setVelocity(angle + angleModifier);
+        // Move the ball just above the paddle to prevent sticking
+        ball.setY(myView.getY() - ball.getView().getFitHeight() - 1);
+
+        // Pick a random upward angle: 45° to 135°
+        double minAngle = Math.toRadians(45);
+        double maxAngle = Math.toRadians(135);
+        double angle = minAngle + Math.random() * (maxAngle - minAngle);
+
+        // Keep speed magnitude, apply new random upward angle
+        ball.setVelocityFromAngle(angle);
     }
+
+
+
+
 
     @Override
     public Node getView() {
