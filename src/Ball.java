@@ -15,7 +15,7 @@ public class Ball implements Collidable {
     private static final String BALL_IMAGE = "resources/ball.gif";
     private static final int BALL_SIZE = 15;
     private static final int ANGLE_RANGE = 60;
-    private static final int BALL_LAUNCH_SPEED = 6;
+    private static final int BALL_LAUNCH_SPEED = 400;
     
     // default screen bounds in case Game doesn't call a bounds-check method
     private static final double DEFAULT_SCREEN_WIDTH = 480;
@@ -73,18 +73,10 @@ public class Ball implements Collidable {
         return myView;
     }
 
-    // move the ball by its velocity (very simple, no elapsed time)
     // Game can call this every frame
-    // updated move so it moves in smaller chunks to avoid skipping collisions
-    public void move() {
-        int steps = (int) Math.ceil(Math.max(Math.abs(dx), Math.abs(dy))); 
-        double stepX = dx / steps;
-        double stepY = dy / steps;
-
-        for (int i = 0; i < steps; i++) {
-            myView.setX(myView.getX() + stepX);
-            myView.setY(myView.getY() + stepY);
-        }
+    public void move(double elapsedTime) {        
+        myView.setX(myView.getX() + dx * elapsedTime / 1000);
+        myView.setY(myView.getY() + dy * elapsedTime / 1000);
         // keep it from leaving the screen using defaults (Game can do nicer checks)
         checkBounds((int) DEFAULT_SCREEN_WIDTH, (int) DEFAULT_SCREEN_HEIGHT);
     }

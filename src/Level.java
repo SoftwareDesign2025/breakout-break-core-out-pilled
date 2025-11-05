@@ -96,7 +96,7 @@ public abstract class Level {
 	}
 	
 	// update objects in level per frame
-    public int step(KeyCode currentKey) {
+    public int step(KeyCode currentKey, double elapsedTime) {
     		
     		pointsPerStep = 0;
     		
@@ -106,7 +106,7 @@ public abstract class Level {
     		}
     		else {
     			for(Paddle paddle : paddles) {
-    				paddle.move(currentKey);
+    				paddle.move(currentKey, elapsedTime);
     				for(Ball ball : balls) {
     					if(paddle.checkCollision(ball)) {
     						paddle.onCollision(ball);
@@ -121,14 +121,14 @@ public abstract class Level {
     		}
     		else {
     			for(Ball ball : balls) {
-    				ball.move();
+    				ball.move(elapsedTime);
     				if(ball.getDy() == 0 && currentKey == KeyCode.SPACE) {
     					ball.launch();
     					}
     				// in progress lives game logic
-//    		        if (ball.getView().getY() + 15 >= Game.SIZE_Y) {
-//    		        	removeBall(ball);
-//    		        }
+    		        if (ball.getView().getY() + 15 >= Game.SIZE_Y) {
+    		        	removeBall(ball);
+    		        }
 
     			}
     		}
@@ -165,7 +165,7 @@ public abstract class Level {
         Iterator<PowerUp> powerupIterator = powerUps.iterator();
         while (powerupIterator.hasNext()) {
         		PowerUp p = powerupIterator.next();
-        		p.move();
+        		p.move(elapsedTime);
         		for(Paddle paddle : paddles) {
         			if (p.intersects(paddle.getView())) {
         				p.activatePower();

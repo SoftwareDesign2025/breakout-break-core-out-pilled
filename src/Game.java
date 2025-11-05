@@ -53,7 +53,7 @@ public class Game extends Application {
         levels.add(new Level_3());
         return levels;
     }
-
+    
     public void runGame() {
         // Select level based on mode
         if (isGalagaMode) {
@@ -108,14 +108,13 @@ public class Game extends Application {
         }
 
         if (isGalagaMode) {
-            stepScore = currentLevel.step(currentKey);
+            stepScore = currentLevel.step(currentKey, elapsedTime);
             gameData.score += stepScore;
         } else {
             if (currentLevel.noBalls()) {
                 loseLife();
             } else {
-                stepScore = currentLevel.step(currentKey);
-                currentKey = null;
+                stepScore = currentLevel.step(currentKey, elapsedTime);
                 gameData.score += stepScore;
             }
         }

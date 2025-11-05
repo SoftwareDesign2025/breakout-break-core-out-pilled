@@ -13,7 +13,7 @@ import java.util.Random;
 public class Paddle implements Collidable {
     public static int PADDLE_WIDTH = 92;
     public static int PADDLE_HEIGHT = 12;
-    public static final int PADDLE_VELOCITY = 7;
+    public static final int PADDLE_VELOCITY = 500;
     public static final String PADDLE_IMAGE = "resources/Paddle.png";
     public static final int MIN_RANDOMIZING = -5;
     public static final int MAX_RANDOMIZING = 5;
@@ -69,11 +69,11 @@ public class Paddle implements Collidable {
      * inputs: a KeyCode which represents a key on the keyboard the player presses
      * outputs: moves the paddle object
      * */
-    public void move(KeyCode code) {
+    public void move(KeyCode code, double elapsedTime) {
         if (code == KeyCode.LEFT) {
-            xCoordinate -= PADDLE_VELOCITY;
+            xCoordinate -= PADDLE_VELOCITY * elapsedTime / 1000;
         } else if (code == KeyCode.RIGHT) {
-            xCoordinate += PADDLE_VELOCITY;
+            xCoordinate += PADDLE_VELOCITY * elapsedTime / 1000;
         }
         // make sure paddle doesn't go off screen
         if (xCoordinate < 0) xCoordinate = 0;
