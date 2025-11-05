@@ -115,6 +115,7 @@ public class Game extends Application {
                 loseLife();
             } else {
                 stepScore = currentLevel.step(currentKey);
+                currentKey = null;
                 gameData.score += stepScore;
             }
         }
