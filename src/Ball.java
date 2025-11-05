@@ -15,7 +15,7 @@ public class Ball implements Collidable {
     private static final String BALL_IMAGE = "resources/ball.gif";
     private static final int BALL_SIZE = 15;
     private static final int ANGLE_RANGE = 60;
-    private static final int BALL_LAUNCH_SPEED = 200;
+    private static final int BALL_LAUNCH_SPEED = 400;
     
     // default screen bounds in case Game doesn't call a bounds-check method
     private static final double DEFAULT_SCREEN_WIDTH = 480;
@@ -94,10 +94,10 @@ public class Ball implements Collidable {
         if (y <= 0) {
             reverseY();
         }
-        // bottom (fell off)
-        if (y + BALL_SIZE >= screenHeight) {
-            reverseY();
-        }
+//        // bottom (fell off)
+//        if (y + BALL_SIZE >= screenHeight) {
+//            reverseY();
+//        }
     }
 
     public void reverseX() { dx = -dx; }
