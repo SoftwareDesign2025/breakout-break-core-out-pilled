@@ -1,6 +1,16 @@
+// Author: Ethan Lowe
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import javafx.scene.image.Image;
+
+
+/**
+ * Represents a projectile fired by the player's ship in Galaga mode.
+ * Moves vertically upward each frame and checks for collisions with enemies.
+ * Each bullet is removed when it goes off-screen or hits an enemy.
+ */
+
 
 public class Bullet extends Ball {
     private static final String BULLET_IMAGE = "resources/ball.gif";

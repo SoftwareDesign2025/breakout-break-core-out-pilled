@@ -1,3 +1,5 @@
+// Author: Ethan Lowe
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
@@ -102,10 +104,10 @@ public class Ball implements Collidable {
         if (y <= 0) {
             reverseY();
         }
-        // bottom (fell off)
-        if (y + BALL_SIZE >= screenHeight) {
-            reverseY();
-        }
+//        // bottom (fell off)
+//        if (y + BALL_SIZE >= screenHeight) {
+//            reverseY();
+//        }
     }
 
     public void reverseX() { dx = -dx; }

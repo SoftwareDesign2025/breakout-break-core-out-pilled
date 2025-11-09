@@ -1,4 +1,13 @@
+// Author: Ethan Lowe
+
 import javafx.scene.image.ImageView;
+
+/**
+ * Represents an enemy in Galaga mode.
+ * Moves horizontally or in patterns depending on the level.
+ * Can be destroyed by bullets, awarding points to the player.
+ */
+
 
 public class Enemy extends Block {
 

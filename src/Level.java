@@ -1,5 +1,6 @@
 // abstract superclass for building each level
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import javafx.scene.Group;
 
@@ -125,10 +126,13 @@ public abstract class Level {
     				if(ball.getDy() == 0 && currentKey == KeyCode.SPACE) {
     					ball.launch();
     					}
-    				// in progress lives game logic
-//    		        if (ball.getView().getY() + 15 >= Game.SIZE_Y) {
-//    		        	removeBall(ball);
-//    		        }
+//    				 in progress lives game logic
+    		        if (ball.getView().getY() + 15 >= Game.SIZE_Y) {
+    		        	try {
+    		        		removeBall(ball);
+    		        	}
+    		        	catch(ConcurrentModificationException e) {}
+    		        }
 
     			}
     		}

@@ -1,3 +1,9 @@
+/**
+ * Third Breakout level with a unique block arrangement and increased difficulty.
+ * Extends the generic Level class and defines its own layout of blocks and power-ups.
+ */
+
+
 public class Level_3 extends Level {
     public Level_3() {
         this.ROWS = 8; // two more rows than Level 2
